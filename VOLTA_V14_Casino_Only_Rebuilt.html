@@ -1,0 +1,1814 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VOLTA V14 — Casino Only Demo</title>
+<style>
+:root{
+  --bg:#06050c;
+  --bg2:#0a0813;
+  --panel:#0f0c1b;
+  --panel2:#151128;
+  --line:#221c3b;
+  --line2:#2e2650;
+  --text:#ebe8f8;
+  --muted:#8b86ab;
+  --green:#2bff88;
+  --green-d:#14c765;
+  --purple:#9b5cff;
+  --purple-d:#6d33e0;
+  --red:#ff4d6d;
+  --glow-g:0 0 18px rgba(43,255,136,.35);
+  --glow-p:0 0 22px rgba(155,92,255,.35);
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:14px;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(900px 500px at 70% -10%,rgba(155,92,255,.14),transparent 60%),
+    radial-gradient(700px 500px at 10% 110%,rgba(43,255,136,.08),transparent 60%);
+}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+input{font:inherit;color:inherit}
+svg{display:block}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:8px}
+::-webkit-scrollbar-track{background:transparent}
+
+.app{
+  position:relative;z-index:1;
+  display:grid;
+  grid-template-columns:240px minmax(0,1fr) 320px;
+  grid-template-areas:"side center feed";
+  height:100vh;
+}
+
+/* ---------- Sidebar ---------- */
+.side{
+  grid-area:side;
+  background:linear-gradient(180deg,var(--bg2),var(--panel));
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;
+  padding:20px 14px;gap:22px;
+  overflow-y:auto;
+}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px}
+.brand-mark{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--green),var(--purple));
+  display:grid;place-items:center;
+  box-shadow:0 0 20px rgba(43,255,136,.3),0 0 28px rgba(155,92,255,.3);
+}
+.brand-mark svg{width:20px;height:20px;color:#06050c}
+.brand-name{font-weight:800;font-size:19px;letter-spacing:.14em}
+.brand-name span{color:var(--green)}
+.nav-label{font-size:10.5px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;padding:0 10px 8px;font-weight:600}
+.nav{display:flex;flex-direction:column;gap:3px}
+.nav button{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border-radius:10px;
+  color:var(--muted);font-weight:500;text-align:left;
+  transition:.18s;position:relative;
+}
+.nav button svg{width:18px;height:18px;flex:none}
+.nav button .cnt{
+  margin-left:auto;font-size:11px;padding:2px 7px;border-radius:20px;
+  background:var(--panel2);color:var(--muted);
+}
+.nav button:hover{color:var(--text);background:rgba(155,92,255,.08)}
+.nav button.active{
+  color:var(--green);
+  background:linear-gradient(90deg,rgba(43,255,136,.12),rgba(43,255,136,.02));
+}
+.nav button.active::before{
+  content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;
+  background:var(--green);box-shadow:var(--glow-g);
+}
+.nav button.active .cnt{background:rgba(43,255,136,.14);color:var(--green)}
+.vip{
+  margin-top:auto;padding:16px;border-radius:var(--r);
+  background:linear-gradient(145deg,rgba(155,92,255,.22),rgba(43,255,136,.08));
+  border:1px solid var(--line2);
+}
+.vip h4{font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.vip h4 b{color:var(--purple);font-size:11px;letter-spacing:.12em}
+.bar{height:6px;border-radius:6px;background:rgba(255,255,255,.07);margin:12px 0 8px;overflow:hidden}
+.bar i{display:block;height:100%;width:64%;border-radius:6px;background:linear-gradient(90deg,var(--purple),var(--green));box-shadow:var(--glow-g)}
+.vip p{font-size:11.5px;color:var(--muted)}
+
+/* ---------- Center ---------- */
+.center{grid-area:center;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.top{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 26px;border-bottom:1px solid var(--line);
+  background:rgba(10,8,19,.7);backdrop-filter:blur(10px);
+}
+.search{
+  flex:1;max-width:380px;display:flex;align-items:center;gap:10px;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0 14px;height:42px;
+  transition:.2s;
+}
+.search:focus-within{border-color:var(--purple);box-shadow:var(--glow-p)}
+.search svg{width:17px;height:17px;color:var(--muted)}
+.search input{flex:1;background:none;border:0;outline:0;height:100%}
+.search input::placeholder{color:var(--muted)}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.wallet{
+  display:flex;align-items:center;gap:10px;height:42px;padding:0 6px 0 14px;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+}
+.wallet .coin{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#9dffc6,var(--green) 55%,var(--green-d));box-shadow:var(--glow-g)}
+.wallet .amt{font-weight:700;font-variant-numeric:tabular-nums;min-width:70px}
+.wallet .tag{font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.btn-dep{
+  height:32px;padding:0 14px;border-radius:9px;font-weight:700;font-size:13px;
+  background:linear-gradient(135deg,var(--green),var(--green-d));color:#04120a;
+  box-shadow:var(--glow-g);transition:.15s;
+}
+.btn-dep:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.avatar{
+  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:800;
+  background:linear-gradient(135deg,var(--purple),var(--purple-d));box-shadow:var(--glow-p);
+}
+.content{flex:1;overflow-y:auto;padding:24px 26px 40px;display:flex;flex-direction:column;gap:26px}
+
+/* hero */
+.hero{
+  position:relative;overflow:hidden;border-radius:18px;padding:30px 34px;
+  background:
+    linear-gradient(110deg,rgba(15,12,27,.95) 30%,rgba(15,12,27,.3)),
+    radial-gradient(500px 260px at 90% 20%,rgba(155,92,255,.55),transparent 70%),
+    radial-gradient(400px 260px at 70% 110%,rgba(43,255,136,.4),transparent 70%),
+    var(--panel);
+  border:1px solid var(--line2);
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:36px 36px;
+  mask-image:radial-gradient(circle at 80% 50%,#000,transparent 70%);
+}
+.hero .pill{
+  display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.14em;font-weight:700;
+  color:var(--green);background:rgba(43,255,136,.1);border:1px solid rgba(43,255,136,.3);
+  padding:5px 11px;border-radius:30px;text-transform:uppercase;
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.hero h1{font-size:34px;line-height:1.12;margin:14px 0 10px;font-weight:800;letter-spacing:-.01em;max-width:460px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--green),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);max-width:420px;line-height:1.55}
+.hero .cta{display:flex;gap:10px;margin-top:20px}
+.btn{
+  height:42px;padding:0 20px;border-radius:11px;font-weight:700;transition:.15s;
+}
+.btn-primary{background:linear-gradient(135deg,var(--green),var(--green-d));color:#04120a;box-shadow:var(--glow-g)}
+.btn-primary:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.btn-ghost{border:1px solid var(--line2);background:rgba(255,255,255,.03)}
+.btn-ghost:hover{border-color:var(--purple);box-shadow:var(--glow-p)}
+.hero-stats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,auto);gap:10px}
+.stat{
+  background:rgba(10,8,19,.65);border:1px solid var(--line2);backdrop-filter:blur(8px);
+  border-radius:12px;padding:12px 16px;min-width:118px;
+}
+.stat small{display:block;color:var(--muted);font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px}
+.stat b{font-size:18px;font-variant-numeric:tabular-nums}
+.stat b.g{color:var(--green)} .stat b.p{color:var(--purple)}
+
+/* section header */
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-h h2{font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px}
+.sec-h h2::before{content:"";width:4px;height:18px;border-radius:3px;background:linear-gradient(var(--green),var(--purple))}
+.sec-h span{color:var(--muted);font-size:12px}
+
+/* featured games */
+.featured{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.game{
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);border-radius:18px;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.game-h{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+.game-h h3{display:flex;align-items:center;gap:10px;font-size:16px}
+.badge{font-size:10px;font-weight:800;letter-spacing:.12em;padding:3px 8px;border-radius:6px;text-transform:uppercase}
+.badge.g{background:rgba(43,255,136,.12);color:var(--green);border:1px solid rgba(43,255,136,.3)}
+.badge.p{background:rgba(155,92,255,.14);color:var(--purple);border:1px solid rgba(155,92,255,.35)}
+.rtp{color:var(--muted);font-size:12px}
+.game-body{padding:18px;display:flex;flex-direction:column;gap:16px;flex:1}
+
+.stage{
+  position:relative;border-radius:14px;border:1px solid var(--line);
+  background:radial-gradient(400px 200px at 50% 0%,rgba(155,92,255,.12),transparent 70%),var(--bg2);
+  overflow:hidden;
+}
+/* dice stage */
+.dice-stage{padding:26px 22px 22px;min-height:230px;display:flex;flex-direction:column;justify-content:center;gap:22px}
+.dice-num{
+  text-align:center;font-size:62px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;
+  transition:color .2s,text-shadow .2s;
+}
+.dice-num.win{color:var(--green);text-shadow:0 0 30px rgba(43,255,136,.55)}
+.dice-num.lose{color:var(--red);text-shadow:0 0 30px rgba(255,77,109,.45)}
+.track-wrap{position:relative;padding:18px 0 4px}
+.track{position:relative;height:14px;border-radius:14px;overflow:hidden;border:1px solid var(--line2)}
+.marker{
+  position:absolute;top:0;width:34px;height:34px;margin-left:-17px;
+  display:grid;place-items:center;transition:left .45s cubic-bezier(.2,.9,.3,1.1);left:50%;
+}
+.marker i{
+  width:26px;height:26px;border-radius:8px;transform:rotate(45deg);
+  background:linear-gradient(135deg,#fff,#cdb8ff);box-shadow:0 0 16px rgba(155,92,255,.8);
+}
+.ticks{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:8px}
+.hist{display:flex;gap:6px;flex-wrap:wrap;min-height:26px}
+.hist span{
+  font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:7px;font-variant-numeric:tabular-nums;
+  background:rgba(255,255,255,.04);border:1px solid var(--line);
+}
+.hist span.w{color:var(--green);border-color:rgba(43,255,136,.3);background:rgba(43,255,136,.07)}
+.hist span.l{color:var(--red);border-color:rgba(255,77,109,.3);background:rgba(255,77,109,.06)}
+
+.ctrl{display:grid;gap:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;font-weight:600}
+.input{
+  display:flex;align-items:center;gap:6px;height:42px;padding:0 6px 0 12px;
+  background:var(--bg2);border:1px solid var(--line);border-radius:10px;transition:.15s;
+}
+.input:focus-within{border-color:var(--purple);box-shadow:var(--glow-p)}
+.input input{flex:1;min-width:0;background:none;border:0;outline:0;font-weight:600;font-variant-numeric:tabular-nums}
+.input .u{color:var(--muted);font-size:12px;margin-right:4px}
+.mini{height:30px;padding:0 9px;border-radius:7px;background:var(--panel2);font-size:12px;font-weight:700;color:var(--muted);transition:.15s}
+.mini:hover{color:var(--text);background:var(--line2)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:3px;height:42px}
+.seg button{border-radius:8px;font-weight:700;color:var(--muted);transition:.15s}
+.seg button.on{background:linear-gradient(135deg,rgba(155,92,255,.35),rgba(155,92,255,.15));color:#fff;box-shadow:inset 0 0 0 1px rgba(155,92,255,.5)}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:8px;outline:0;
+  background:linear-gradient(90deg,var(--purple) 50%,var(--green) 50%);
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:4px solid var(--purple);
+  box-shadow:0 0 14px rgba(155,92,255,.8);cursor:grab;
+}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:4px solid var(--purple);cursor:grab}
+.info{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.info div{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.info small{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.info b{font-size:15px;font-variant-numeric:tabular-nums}
+.play{
+  height:50px;border-radius:12px;font-weight:800;font-size:15px;letter-spacing:.06em;text-transform:uppercase;
+  background:linear-gradient(135deg,var(--green),var(--green-d));color:#04120a;box-shadow:var(--glow-g);transition:.15s;
+}
+.play:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.08)}
+.play:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.play.cash{background:linear-gradient(135deg,#c9a4ff,var(--purple));color:#12062b;box-shadow:var(--glow-p)}
+
+/* crash stage */
+.crash-stage{height:340px;transition:border-color .3s}
+.crash-stage.shake{animation:shake .16s linear infinite}
+@keyframes shake{0%{transform:translate(0,0)}25%{transform:translate(var(--sh),calc(var(--sh)*-.6))}50%{transform:translate(calc(var(--sh)*-.8),var(--sh))}75%{transform:translate(calc(var(--sh)*.6),calc(var(--sh)*.5))}100%{transform:translate(0,0)}}
+.crash-stage.boom{animation:boom .9s ease-out}
+@keyframes boom{0%{box-shadow:0 0 90px rgba(255,77,109,.95),inset 0 0 140px rgba(255,77,109,.55)}100%{box-shadow:0 0 0 rgba(255,77,109,0),inset 0 0 0 rgba(255,77,109,0)}}
+.pop{position:absolute;left:50%;bottom:28%;font-size:28px;font-weight:800;color:var(--purple);text-shadow:0 0 22px rgba(155,92,255,.9);animation:floatup 1.3s ease-out forwards;pointer-events:none}
+@keyframes floatup{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-90px)}}
+.crash-stage canvas{position:absolute;inset:0;width:100%;height:100%}
+.crash-mult{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;gap:4px;
+}
+.crash-mult{--i:0;--pd:1s}
+.crash-mult b{font-size:84px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.02em;transform:scale(calc(1 + var(--i)*.4));will-change:transform}
+.crash-mult.run b{animation:throb var(--pd) ease-in-out infinite}
+@keyframes throb{50%{transform:scale(calc(1.07 + var(--i)*.4))}}
+.crash-mult.dead b{animation:slam .5s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes slam{0%{transform:scale(1.7);opacity:.35}100%{transform:scale(1);opacity:1}}
+.crash-mult small{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.crash-mult.run b{color:var(--green);text-shadow:0 0 34px rgba(43,255,136,.55)}
+.crash-mult.dead b{color:var(--red);text-shadow:0 0 34px rgba(255,77,109,.5)}
+.crash-mult.wait b{color:var(--purple);font-size:48px}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.card{
+  position:relative;aspect-ratio:3/4;border-radius:14px;overflow:hidden;border:1px solid var(--line);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:12px;cursor:pointer;
+  transition:.22s;isolation:isolate;
+}
+.card::before{content:"";position:absolute;inset:0;z-index:-2;background:var(--art)}
+.card::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 45%,rgba(6,5,12,.92))}
+.card .glyph{position:absolute;top:18%;left:0;right:0;text-align:center;font-size:54px;font-weight:900;color:rgba(255,255,255,.9);text-shadow:0 0 28px var(--glow);letter-spacing:-.03em}
+.card:hover{transform:translateY(-5px);border-color:var(--purple);box-shadow:0 12px 30px rgba(0,0,0,.5),var(--glow-p)}
+.card b{font-size:13.5px}
+.card small{color:var(--muted);font-size:11px}
+.card .tag{position:absolute;top:10px;left:10px;font-size:9.5px;font-weight:800;letter-spacing:.1em;padding:3px 7px;border-radius:5px;background:rgba(6,5,12,.7);color:var(--green);border:1px solid rgba(43,255,136,.35)}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:30px}
+
+/* ---------- Feed ---------- */
+.feed{
+  grid-area:feed;border-left:1px solid var(--line);background:linear-gradient(180deg,var(--bg2),var(--panel));
+  display:flex;flex-direction:column;min-height:0;
+}
+.feed-h{padding:18px 18px 12px}
+.feed-h h3{display:flex;align-items:center;gap:9px;font-size:15px;margin-bottom:12px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px}
+.tabs button{height:32px;border-radius:8px;font-size:12.5px;font-weight:700;color:var(--muted);transition:.15s}
+.tabs button.on{background:rgba(43,255,136,.12);color:var(--green);box-shadow:inset 0 0 0 1px rgba(43,255,136,.3)}
+.feed-cols{display:flex;justify-content:space-between;padding:6px 20px;color:var(--muted);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.list{flex:1;overflow:hidden;position:relative;padding:0 10px 10px;list-style:none;display:flex;flex-direction:column;gap:6px}
+.list::after{content:"";position:absolute;left:0;right:0;bottom:0;height:70px;background:linear-gradient(transparent,var(--panel));pointer-events:none}
+.item{
+  display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:11px;
+  background:rgba(255,255,255,.025);border:1px solid var(--line);
+  animation:slide .45s cubic-bezier(.2,.9,.3,1.1);flex:none;
+}
+.item.big{border-color:rgba(43,255,136,.35);background:linear-gradient(90deg,rgba(43,255,136,.1),rgba(255,255,255,.02))}
+.item.me{border-color:rgba(155,92,255,.5);background:linear-gradient(90deg,rgba(155,92,255,.16),rgba(255,255,255,.02))}
+@keyframes slide{from{opacity:0;transform:translateY(-16px) scale(.97)}to{opacity:1;transform:none}}
+.av{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none;color:#07050f}
+.who{min-width:0;flex:1}
+.who b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who small{color:var(--muted);font-size:11px}
+.pay{text-align:right;font-variant-numeric:tabular-nums}
+.pay b{display:block;font-size:13px}
+.pay small{font-size:11px;color:var(--muted)}
+.pos{color:var(--green)} .neg{color:var(--muted)}
+.rank{width:26px;text-align:center;font-weight:800;font-size:14px;color:var(--muted);flex:none}
+.rank.r1{color:#ffd45e;text-shadow:0 0 14px rgba(255,212,94,.6)}
+.rank.r2{color:#d6dcf5}.rank.r3{color:#e49a62}
+.feed-foot{padding:14px 18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;color:var(--muted);font-size:12px}
+.feed-foot b{color:var(--text)}
+
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translate(-50%,30px);opacity:0;z-index:50;
+  padding:12px 20px;border-radius:12px;font-weight:700;background:var(--panel2);border:1px solid var(--green);
+  box-shadow:var(--glow-g);transition:.3s;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.bad{border-color:var(--red);box-shadow:0 0 18px rgba(255,77,109,.3)}
+.demo-note{font-size:11.5px;color:var(--muted);text-align:center;padding-top:4px}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1280px){
+  body{overflow:auto}
+  .app{height:auto;min-height:100vh;grid-template-columns:240px minmax(0,1fr);grid-template-areas:"side center" "side feed"}
+  .center{overflow:visible}
+  .content{overflow:visible}
+  .feed{border-left:0;border-top:1px solid var(--line);height:560px}
+  .side{position:sticky;top:0;height:100vh;align-self:start}
+}
+@media (max-width:1000px){
+  .featured{grid-template-columns:1fr}
+  .hero{flex-direction:column;align-items:flex-start}
+}
+@media (max-width:820px){
+  .app{grid-template-columns:68px minmax(0,1fr)}
+  .side{padding:16px 8px;align-items:center}
+  .brand-name,.nav-label,.nav button span,.nav button .cnt,.vip{display:none}
+  .nav button{padding:12px;justify-content:center}
+  .nav button.active::before{left:-8px}
+  .top{padding:12px 14px}
+  .wallet .tag,.avatar{display:none}
+  .content{padding:16px 14px 30px}
+  .hero{padding:22px}
+  .hero h1{font-size:26px}
+  .hero-stats{grid-template-columns:1fr 1fr 1fr;width:100%}
+  .stat{min-width:0;padding:10px}
+  .stat b{font-size:15px}
+  .dice-num{font-size:48px}
+  .crash-mult b{font-size:48px}
+}
+
+/* ===== VOLTA V2 visual refresh + wallet workspace ===== */
+:root{
+  --bg:#080711;--bg2:#0d0b18;--panel:#121020;--panel2:#19152b;
+  --line:#292440;--line2:#393154;--text:#f2efff;--muted:#a09ab9;
+  --green:#58f5a5;--green-d:#22c879;--purple:#a879ff;--purple-d:#7042d8;
+  --red:#ff647f;--r:16px;
+}
+body{background:radial-gradient(1000px 560px at 65% -15%,rgba(138,91,255,.18),transparent 65%),var(--bg)}
+.app{grid-template-columns:250px minmax(0,1fr) 300px;gap:0}
+.side,.feed{background:rgba(12,10,22,.94);backdrop-filter:blur(16px)}
+.side{padding:22px 16px;gap:25px}
+.brand-mark{border-radius:12px}
+.nav button{padding:11px 13px;border-radius:11px}
+.top{padding:15px 28px;background:rgba(12,10,22,.82)}
+.content{padding:28px 30px 46px;gap:28px}
+.hero{min-height:225px;padding:34px 38px;border-radius:22px}
+.game,.card,.vip{border-radius:18px}
+.game{box-shadow:0 12px 36px rgba(0,0,0,.14)}
+.btn,.play,.btn-dep{border-radius:11px}
+.feed{border-left-color:rgba(75,64,111,.55)}
+.demo-note{padding:10px 12px;border:1px dashed var(--line2);border-radius:10px;background:rgba(255,255,255,.018)}
+#wallet-page{display:none;gap:22px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.eyebrow{color:var(--green);font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+.page-head h1{font-size:30px;letter-spacing:-.04em}
+.page-head p{color:var(--muted);margin-top:7px;line-height:1.5}
+.wallet-hero{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}
+.balance-card{padding:25px 26px;border-radius:20px;border:1px solid rgba(88,245,165,.28);background:radial-gradient(450px 230px at 95% 5%,rgba(88,245,165,.16),transparent 70%),linear-gradient(135deg,#171a29,#151126);position:relative;overflow:hidden}
+.balance-card:after{content:"";position:absolute;width:210px;height:210px;border:1px solid rgba(88,245,165,.12);border-radius:50%;right:-70px;bottom:-130px;box-shadow:0 0 0 25px rgba(88,245,165,.025),0 0 0 55px rgba(88,245,165,.02)}
+.balance-card .label{color:#b8b3cc;font-size:11px;text-transform:uppercase;letter-spacing:.15em}
+.balance-card .big-balance{font-size:clamp(34px,4vw,48px);font-weight:850;letter-spacing:-.045em;margin:13px 0 5px;font-variant-numeric:tabular-nums}
+.balance-card .sub{font-size:12px;color:var(--muted)}
+.balance-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;position:relative;z-index:1}
+.balance-actions button{height:39px;padding:0 15px;border-radius:10px;font-weight:750;font-size:12px}
+.action-bright{background:var(--green);color:#06150d}
+.action-soft{border:1px solid var(--line2);background:rgba(255,255,255,.04)}
+.wallet-side-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wallet-stat{padding:18px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,rgba(25,21,43,.95),rgba(15,13,27,.95))}
+.wallet-stat small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:9px}
+.wallet-stat b{font-size:21px;font-variant-numeric:tabular-nums}
+.wallet-stat span{display:block;color:var(--muted);font-size:11px;margin-top:5px}
+.wallet-panel{border:1px solid var(--line);border-radius:18px;background:rgba(18,16,32,.88);overflow:hidden}
+.panel-title{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.panel-title h2{font-size:15px}
+.panel-title p{font-size:11px;color:var(--muted);margin-top:4px}
+.quick-amounts{display:flex;gap:8px;flex-wrap:wrap;padding:17px 20px 20px}
+.quick-amounts button{border:1px solid var(--line2);background:#171429;border-radius:10px;padding:10px 15px;font-weight:750}
+.quick-amounts button:hover{border-color:var(--green);color:var(--green)}
+.wallet-toolbar{display:flex;align-items:center;gap:10px;padding:15px 18px;flex-wrap:wrap}
+.wallet-toolbar input,.wallet-toolbar select{height:38px;background:#0d0b18;border:1px solid var(--line);border-radius:9px;color:var(--text);padding:0 11px;outline:none}
+.wallet-toolbar input{flex:1;min-width:160px}
+.wallet-toolbar select{min-width:135px}
+.wallet-toolbar button{height:38px;padding:0 12px;border:1px solid var(--line2);border-radius:9px;font-size:12px;font-weight:700}
+.tx-wrap{overflow-x:auto}
+.tx-table{width:100%;border-collapse:collapse;min-width:620px}
+.tx-table th{text-align:left;padding:12px 18px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.13em;font-weight:700;background:rgba(255,255,255,.018)}
+.tx-table td{padding:14px 18px;border-top:1px solid rgba(57,49,84,.55);font-size:12px;white-space:nowrap}
+.tx-table tr:hover td{background:rgba(255,255,255,.018)}
+.tx-name{display:flex;align-items:center;gap:11px}
+.tx-icon{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:rgba(168,121,255,.13);color:var(--purple);font-size:15px}
+.tx-name b{display:block;font-size:12px}
+.tx-name small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.tx-amount{font-weight:800;font-variant-numeric:tabular-nums}
+.tx-amount.plus{color:var(--green)}.tx-amount.minus{color:#ff8a9c}
+.tx-status{display:inline-flex;padding:5px 8px;border-radius:20px;font-size:10px;font-weight:800;background:rgba(88,245,165,.1);color:var(--green)}
+.tx-empty{text-align:center;color:var(--muted);padding:34px!important}
+.wallet-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;color:var(--muted);font-size:11px;border-top:1px solid var(--line)}
+.demo-stamp{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(88,245,165,.25);background:rgba(88,245,165,.07);color:var(--green);padding:7px 10px;border-radius:30px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.demo-stamp i{width:6px;height:6px;border-radius:50%;background:var(--green)}
+#nav2 button[data-page]{width:100%}
+@media(max-width:1200px){.app{grid-template-columns:220px minmax(0,1fr)}.feed{display:none}}
+@media(max-width:850px){.app{grid-template-columns:72px minmax(0,1fr)}.side{padding:16px 9px;align-items:center}.brand{padding:0}.brand-name,.nav-label,.nav button span,.nav button .cnt,.vip{display:none}.nav{width:100%}.nav button{justify-content:center;padding:12px 8px}.nav button.active::before{left:-9px}.nav button svg{width:20px;height:20px}#nav2{width:100%}.top{padding:12px 15px}.content{padding:18px 15px 30px}.hero{padding:24px;display:block}.hero-stats{margin-top:20px;grid-template-columns:repeat(3,1fr)}.stat{min-width:0;padding:10px}.stat b{font-size:15px}.featured{grid-template-columns:1fr}.wallet-hero{grid-template-columns:1fr}.page-head h1{font-size:25px}}
+@media(max-width:520px){.app{grid-template-columns:56px minmax(0,1fr)}.side{padding:13px 6px}.brand-mark{width:34px;height:34px}.wallet .tag,.avatar{display:none}.wallet{padding-left:9px;gap:7px}.wallet .amt{min-width:58px;font-size:12px}.btn-dep{padding:0 9px}.search{height:38px;padding:0 9px}.search input{min-width:0;font-size:12px}.hero h1{font-size:26px}.hero-stats{gap:6px}.stat{padding:8px}.stat small{font-size:8px}.stat b{font-size:13px}.wallet-side-stats{gap:8px}.wallet-stat{padding:13px}.wallet-stat b{font-size:17px}.balance-card{padding:20px}.balance-card .big-balance{font-size:34px}.page-head{align-items:flex-start;flex-direction:column}.wallet-toolbar{padding:12px}.wallet-toolbar select{flex:1}}
+
+
+/* ===== VOLTA playable lobby expansion ===== */
+.game-modal{position:fixed;inset:0;z-index:1000;background:rgba(4,5,12,.88);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:18px}
+.game-modal.open{display:flex}.gm-card{width:min(760px,100%);max-height:92vh;overflow:auto;background:#10121e;border:1px solid #34304d;border-radius:22px;box-shadow:0 25px 100px #000b;padding:22px;position:relative}
+.gm-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.gm-title{font-size:23px;font-weight:850}.gm-sub{font-size:12px;color:#a5a3b8;margin-top:4px}.gm-close{border:1px solid #39364d;background:#1a1b2b;color:#fff;border-radius:11px;padding:9px 13px;cursor:pointer}
+.gm-stage{min-height:230px;border-radius:17px;border:1px solid #302b49;background:radial-gradient(circle at 50% 30%,#292047,#10121e 72%);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:22px;margin-bottom:16px;text-align:center}
+.gm-result{font-size:clamp(30px,7vw,54px);font-weight:900;letter-spacing:-2px;text-shadow:0 0 28px color-mix(in srgb,var(--gm-accent,#9b5cff) 55%,transparent)}
+.gm-card{--gm-accent:#9b5cff}.gm-stage{background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--gm-accent) 22%,#10121e),#10121e 72%);border-color:color-mix(in srgb,var(--gm-accent) 38%,#302b49)}.gm-btn{background:linear-gradient(100deg,color-mix(in srgb,var(--gm-accent) 78%,#34204f),var(--gm-accent))}.gm-reel{animation:reelPop .35s ease-out}.gm-playing-card{animation:cardIn .3s ease-out}@keyframes reelPop{from{transform:translateY(-10px) scale(.92);opacity:.5}to{transform:none;opacity:1}}@keyframes cardIn{from{transform:translateY(10px) rotate(-4deg);opacity:.4}to{transform:none;opacity:1}}
+.gm-help{width:100%;max-width:560px;color:#aaa5bf;font-size:12px;line-height:1.5;padding:10px 13px;border:1px solid #34304d;border-radius:11px;background:#0b0d17}.gm-caption{font-size:13px;color:#b9b5cb}.gm-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.gm-field label{display:block;color:#a7a3b8;font-size:11px;margin:0 0 7px}.gm-field input,.gm-field select{width:100%;background:#0b0d17;color:#fff;border:1px solid #38344e;border-radius:10px;padding:12px;outline:none}.gm-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.gm-btn{border:0;border-radius:11px;padding:12px 18px;font-weight:800;cursor:pointer;background:linear-gradient(100deg,#8d4cff,#b14dff);color:#fff}.gm-btn.alt{background:#25243a;border:1px solid #45405e}.gm-btn:disabled{opacity:.45;cursor:not-allowed}.gm-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:min(390px,100%)}.gm-tile{aspect-ratio:1;border:1px solid #51466f;border-radius:10px;background:linear-gradient(145deg,#25233b,#151625);color:#fff;font-size:23px;cursor:pointer}.gm-tile.safe{background:#0c6846;border-color:#27d994}.gm-tile.mine{background:#8b1f42;border-color:#ff6487}.gm-reels{display:flex;gap:10px;justify-content:center}.gm-reel{width:78px;height:84px;display:grid;place-items:center;background:#0b0d17;border:1px solid #574777;border-radius:13px;font-size:42px;box-shadow:inset 0 0 22px #9b5cff20}.gm-cards{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}.gm-playing-card{width:58px;height:78px;background:#f6f3ff;color:#151322;border-radius:8px;display:grid;place-items:center;font-weight:900;font-size:22px}.gm-playing-card.red{color:#d52e59}.gm-pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.gm-pill{border:1px solid #50486c;border-radius:999px;background:#201e32;color:#eee;padding:9px 13px;cursor:pointer}.gm-pill.selected{border-color:#b77aff;background:#49306b}.gm-note{margin-top:13px;color:#9692aa;font-size:11px;line-height:1.5}.real-money-panel{margin-top:14px;border:1px solid #5a4050;background:linear-gradient(110deg,#241622,#171522);border-radius:14px;padding:15px;display:flex;justify-content:space-between;align-items:center;gap:14px}.real-money-panel b{display:block}.real-money-panel small{display:block;color:#aaa1b2;margin-top:4px}.real-money-panel button{background:#292332;border:1px solid #5b4b5d;color:#aaa;border-radius:9px;padding:10px 12px;cursor:not-allowed}
+@media(max-width:600px){.game-modal{padding:8px}.gm-card{padding:15px;border-radius:16px}.gm-controls{grid-template-columns:1fr}.gm-stage{min-height:190px}.gm-reel{width:65px;height:72px}.real-money-panel{align-items:flex-start;flex-direction:column}}
+
+
+
+/* ===== VOLTA V7: individual game rooms ===== */
+.gm-card{width:min(900px,100%);background:linear-gradient(145deg,#111426,#090b15 72%);border-color:color-mix(in srgb,var(--gm-accent) 42%,#34304d);}
+.gm-top{padding:3px 2px 14px;border-bottom:1px solid #ffffff12}
+.gm-title{font-size:clamp(22px,3vw,30px);letter-spacing:-.04em}
+.gm-visual{--art:linear-gradient(135deg,#171b3c,#49318c);position:relative;isolation:isolate;overflow:hidden;min-height:210px;margin:16px 0;border:1px solid color-mix(in srgb,var(--gm-accent) 48%,#34304d);border-radius:19px;background:var(--art);display:flex;align-items:center;justify-content:space-between;padding:24px 5%;}
+.gm-visual:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 78% 50%,color-mix(in srgb,var(--gm-accent) 42%,transparent),transparent 34%),linear-gradient(110deg,#050611bb,transparent 70%);}
+.gm-visual:after{content:"";position:absolute;inset:0;z-index:-1;opacity:.2;background-image:linear-gradient(#fff2 1px,transparent 1px),linear-gradient(90deg,#fff2 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(90deg,transparent,#000);}
+.gm-v-copy{max-width:58%;}.gm-v-kicker{font-size:10px;letter-spacing:.2em;font-weight:900;color:var(--gm-accent);text-transform:uppercase}.gm-v-name{font-size:clamp(20px,3vw,31px);font-weight:950;line-height:1.05;margin:8px 0}.gm-v-desc{font-size:12px;color:#d0cde0;max-width:340px;line-height:1.5}.gm-v-icon{font-size:clamp(70px,12vw,116px);filter:drop-shadow(0 0 24px color-mix(in srgb,var(--gm-accent) 60%,transparent));animation:gmFloat 3s ease-in-out infinite;transform:rotate(-8deg);text-align:center;min-width:30%;}
+.gm-v-icon:after{content:"";display:block;width:110px;height:12px;margin:0 auto;background:var(--gm-accent);opacity:.28;filter:blur(12px);border-radius:50%;}
+.gm-v-hud{position:absolute;right:16px;top:13px;display:flex;gap:7px}.gm-v-chip{font-size:9px;font-weight:900;letter-spacing:.1em;padding:6px 9px;border:1px solid #ffffff35;border-radius:30px;background:#090b1599;color:#fff}
+@keyframes gmFloat{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-9px) rotate(2deg)}}
+.gm-stage{min-height:205px;margin-bottom:14px;background:radial-gradient(circle at 50% 20%,color-mix(in srgb,var(--gm-accent) 25%,#10121e),#0b0d17 72%);box-shadow:inset 0 0 50px #0005;}
+.gm-result{letter-spacing:-.04em}.gm-controls{padding:15px;border:1px solid #ffffff14;border-radius:16px;background:#ffffff06;gap:10px}.gm-field{padding:2px}.gm-field input,.gm-field select{border-color:color-mix(in srgb,var(--gm-accent) 38%,#38344e);}
+.gm-choice-select{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;}
+.gm-choice-deck{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}.gm-choice-btn{border:1px solid #ffffff25;background:#141729;color:#eae8f6;padding:10px 13px;border-radius:11px;font-size:12px;font-weight:800;transition:.18s}.gm-choice-btn:hover,.gm-choice-btn.selected{border-color:var(--gm-accent);background:color-mix(in srgb,var(--gm-accent) 24%,#141729);box-shadow:0 0 18px color-mix(in srgb,var(--gm-accent) 22%,transparent);transform:translateY(-1px)}
+.gm-actions .gm-btn{min-width:145px;box-shadow:0 8px 24px color-mix(in srgb,var(--gm-accent) 22%,transparent)}
+.gm-note{padding-top:10px;border-top:1px solid #ffffff12}
+.gm-visual[data-kind="slots"] .gm-v-icon{font-size:0;display:flex;gap:7px;transform:none;animation:none;min-width:38%;justify-content:center}
+.gm-visual[data-kind="slots"] .gm-v-icon:before{content:attr(data-reels);font-size:clamp(36px,7vw,64px);letter-spacing:7px;padding:16px 18px;border:2px solid var(--gm-accent);border-radius:15px;background:#090b17;box-shadow:0 0 28px color-mix(in srgb,var(--gm-accent) 40%,transparent),inset 0 0 20px #fff1}
+.gm-visual[data-kind="table"]{background:radial-gradient(ellipse at 65% 55%,#17684d,#073323 65%,#061a17)}
+.gm-visual[data-kind="sports"]{background:linear-gradient(180deg,#163d32,#09251e)}
+.gm-visual[data-kind="sports"] .gm-v-icon{font-size:clamp(62px,10vw,100px)}
+.gm-visual[data-kind="puzzle"]{background:linear-gradient(135deg,#181c46,#31235e)}
+.gm-visual[data-kind="arcade"]{background:linear-gradient(145deg,#071b37,#17204a 55%,#111126)}
+.gm-visual[data-kind="originals"]{background:linear-gradient(135deg,#10132c,#291b50 58%,#101b2a)}
+@media(max-width:600px){.gm-visual{min-height:165px;padding:18px 15px}.gm-v-copy{max-width:65%}.gm-v-desc{font-size:10px}.gm-v-hud{right:9px;top:9px}.gm-v-chip{font-size:8px;padding:5px 7px}.gm-visual[data-kind="slots"] .gm-v-icon:before{letter-spacing:2px;padding:12px 10px}.gm-choice-deck{gap:6px}.gm-choice-btn{padding:9px 10px;font-size:11px}}
+
+/* ===== VOLTA V4 social, progression and account workspace ===== */
+#v4-page{display:none;gap:20px;min-height:65vh}.v4-compact .v4-card{padding:11px}.v4-compact .v4-listrow{padding:8px}.v4-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}.v4-head h1{font-size:30px;letter-spacing:-.04em}.v4-head p{color:var(--muted);margin-top:6px;line-height:1.5}.v4-kicker{font-size:10px;color:var(--green);font-weight:850;letter-spacing:.18em;text-transform:uppercase;margin-bottom:7px}.v4-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.v4-card{background:linear-gradient(145deg,rgba(25,21,43,.96),rgba(14,12,25,.96));border:1px solid var(--line);border-radius:17px;padding:17px;min-width:0}.v4-card h3{font-size:14px;margin-bottom:7px}.v4-card p,.v4-muted{color:var(--muted);font-size:12px;line-height:1.5}.v4-number{font-size:27px;font-weight:850;letter-spacing:-.04em;margin:8px 0 3px;font-variant-numeric:tabular-nums}.v4-row{display:flex;align-items:center;gap:12px}.v4-row>*:last-child{min-width:0}.v4-avatar{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--purple),#4b2e91);font-size:19px;font-weight:900;flex:none}.v4-btn{border:1px solid var(--line2);background:#1a1730;border-radius:10px;padding:9px 13px;font-size:12px;font-weight:800}.v4-btn.primary{background:var(--green);color:#07150e;border-color:transparent}.v4-btn:disabled{opacity:.45;cursor:not-allowed}.v4-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.v4-progress{height:8px;border-radius:9px;background:#29243d;overflow:hidden;margin:10px 0}.v4-progress i{height:100%;display:block;background:linear-gradient(90deg,var(--purple),var(--green));border-radius:9px}.v4-list{display:flex;flex-direction:column;gap:9px}.v4-listrow{display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.018)}.v4-listrow .grow{flex:1;min-width:0}.v4-listrow b{font-size:12px}.v4-listrow small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.v4-rank{width:25px;color:var(--muted);font-weight:900}.v4-rank.gold{color:#ffd45e}.v4-badge{font-size:10px;font-weight:850;letter-spacing:.06em;padding:5px 8px;border-radius:8px;background:rgba(168,121,255,.14);color:var(--purple)}.v4-input{width:100%;background:#0d0b18;border:1px solid var(--line2);color:var(--text);border-radius:10px;padding:11px 12px;outline:none}.v4-input:focus{border-color:var(--purple)}.v4-form{display:grid;gap:10px;max-width:520px}.v4-table{width:100%;border-collapse:collapse}.v4-table td,.v4-table th{text-align:left;padding:11px;border-bottom:1px solid var(--line);font-size:12px}.v4-table th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.1em}.v4-setting{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.v4-setting:last-child{border:0}.v4-empty{padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line2);border-radius:12px}.v4-two{display:grid;grid-template-columns:1fr 1fr;gap:13px}.v4-note{border:1px solid rgba(88,245,165,.22);background:rgba(88,245,165,.055);color:#b9f8d7;border-radius:12px;padding:12px;font-size:11px;line-height:1.5}
+/* VOLTA demo banking */
+#bank-page{display:none;gap:18px;min-height:65vh}.bank-hero{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}.bank-card{padding:22px;border:1px solid rgba(111,91,190,.4);border-radius:18px;background:radial-gradient(circle at 85% 15%,rgba(137,94,255,.24),transparent 40%),linear-gradient(135deg,#211943,#111020)}.bank-card .bank-label{font-size:10px;letter-spacing:.16em;color:#c3b2ff;font-weight:800}.bank-card .bank-balance{font-size:34px;font-weight:900;margin:12px 0 5px}.bank-meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:11px;margin-top:18px}.bank-forms{display:grid;grid-template-columns:1fr 1fr;gap:13px}.bank-form{padding:17px;border:1px solid var(--line);border-radius:15px;background:rgba(18,16,32,.9)}.bank-form h3{font-size:14px;margin-bottom:6px}.bank-form p{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:12px}.bank-form input{width:100%;height:42px;border-radius:9px;border:1px solid var(--line2);background:#0d0b18;color:var(--text);padding:0 12px;margin-bottom:9px}.bank-form button{width:100%;height:40px;border-radius:9px;background:var(--green);color:#07150e;font-weight:850}.bank-log{padding:16px;border:1px solid var(--line);border-radius:15px;background:rgba(18,16,32,.9)}.bank-log-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:12px}.bank-log-row:last-child{border:0}.bank-log-row small{display:block;color:var(--muted);margin-top:3px}.bank-log-row b{font-variant-numeric:tabular-nums}.bank-disclaimer{padding:12px;border:1px solid rgba(255,196,92,.22);background:rgba(255,196,92,.06);color:#f3d69b;border-radius:11px;font-size:11px;line-height:1.5}
+@media(max-width:760px){.bank-hero,.bank-forms{grid-template-columns:1fr}.bank-card .bank-balance{font-size:29px}}
+@media(max-width:900px){.v4-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.v4-two{grid-template-columns:1fr}}
+@media(max-width:560px){.v4-grid{grid-template-columns:1fr 1fr}.v4-card{padding:13px}.v4-head h1{font-size:25px}.v4-number{font-size:22px}}
+
+
+/* VOLTA V8 — game-specific rooms and tactile motion */
+.gm-visual{min-height:230px;transition:filter .25s,transform .25s}
+.gm-visual .room-art{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:clamp(8px,2vw,22px);width:48%;min-height:150px}
+.gm-visual .room-orb{width:clamp(58px,9vw,104px);height:clamp(58px,9vw,104px);display:grid;place-items:center;border-radius:24px;background:linear-gradient(145deg,#ffffff30,#ffffff08);border:1px solid #ffffff55;box-shadow:0 12px 38px #0005,inset 0 1px #fff6;font-size:clamp(35px,6vw,66px);animation:roomFloat 2.8s ease-in-out infinite}
+.gm-visual .room-orb:nth-child(2){animation-delay:-.8s;transform:scale(.78)}
+.gm-visual .room-orb:nth-child(3){animation-delay:-1.5s;transform:scale(.62)}
+.gm-visual .room-ring{position:absolute;width:160px;height:160px;border:1px solid var(--gm-accent);border-radius:50%;opacity:.45;animation:roomSpin 9s linear infinite}
+.gm-visual .room-ring:before,.gm-visual .room-ring:after{content:"";position:absolute;width:9px;height:9px;background:var(--gm-accent);border-radius:50%;top:14px;left:22px;box-shadow:0 0 18px var(--gm-accent)}
+.gm-visual .room-ring:after{top:auto;left:auto;right:8px;bottom:24px}
+.gm-visual .room-art .room-orb.coin{border-radius:50%;background:radial-gradient(circle at 32% 25%,#fff6b6,#e9b83e 42%,#87520a 75%,#f8d66a);color:#5c3905;border:5px double #ffed9a;text-shadow:0 1px #fff8;box-shadow:0 0 35px #f8c64a55,inset 0 0 0 3px #fff5}
+.gm-visual[data-game="Coin Flip"] .room-orb.coin{animation:coinHover 2s ease-in-out infinite}
+.gm-visual .room-orb.card{border-radius:12px;background:linear-gradient(145deg,#fff,#dcd7f2);color:#27213e;border:2px solid #fff;font-weight:950}
+.gm-visual .room-orb.ball{border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff,#d9d9e8 20%,var(--gm-accent) 70%);color:#fff}
+.gm-visual .room-orb.gem{clip-path:polygon(50% 0,90% 25%,80% 80%,50% 100%,20% 80%,10% 25%);border-radius:8px}
+.gm-visual .room-orb.wheel{border-radius:50%;background:conic-gradient(#ffcf55 0 45deg,#9e69ff 45deg 90deg,#44d6b0 90deg 135deg,#ff6689 135deg 180deg,#ffcf55 180deg 225deg,#9e69ff 225deg 270deg,#44d6b0 270deg 315deg,#ff6689 315deg);color:#20142f;border:5px solid #f5d98b}
+.gm-visual .room-orb.slot{border-radius:13px;background:linear-gradient(#fff,#d8d5e8);color:#20142f;border:3px solid var(--gm-accent);font-size:clamp(32px,5vw,54px)}
+@keyframes roomFloat{0%,100%{translate:0 0;rotate:-4deg}50%{translate:0 -11px;rotate:4deg}}
+@keyframes roomSpin{to{rotate:360deg}}
+@keyframes coinHover{0%,100%{transform:rotateY(0) translateY(0)}50%{transform:rotateY(22deg) translateY(-8px)}}
+@keyframes coinToss{0%{transform:translateY(0) rotateY(0) rotateZ(0) scale(1)}20%{transform:translateY(-70px) rotateY(360deg) rotateZ(20deg) scale(1.08)}55%{transform:translateY(-92px) rotateY(900deg) rotateZ(-12deg) scale(1.12)}80%{transform:translateY(5px) rotateY(1260deg) rotateZ(5deg) scale(.98)}100%{transform:translateY(0) rotateY(1440deg) rotateZ(0) scale(1)}}
+@keyframes stageReveal{0%{opacity:.25;transform:scale(.88) rotateX(18deg);filter:blur(5px)}100%{opacity:1;transform:none;filter:none}}
+.gm-visual.is-playing .room-orb{animation:roomFloat .42s ease-in-out infinite alternate}
+.gm-stage.reveal{animation:stageReveal .45s cubic-bezier(.2,.8,.2,1)}
+.gm-visual[data-game="Coin Flip"] .room-orb.coin.flipping{animation:coinToss 1.35s cubic-bezier(.25,.75,.25,1) both}
+.gm-visual[data-game="Coin Flip"] .room-orb.coin{transform-style:preserve-3d}
+.gm-visual[data-game="Coin Flip"] .room-orb.coin .coin-face{position:absolute;backface-visibility:hidden}
+.gm-visual[data-game="Coin Flip"] .room-orb.coin .tails{transform:rotateY(180deg)}
+.gm-stage .gm-result{transition:color .2s}
+.gm-stage .gm-reels .gm-reel{transition:transform .2s}
+@media(max-width:600px){.gm-visual{min-height:180px}.gm-visual .room-art{width:42%;gap:5px}.gm-visual .room-ring{width:110px;height:110px}.gm-visual .room-orb{border-radius:16px}}
+
+
+/* VOLTA V14: real game-like motion and dedicated casino play surfaces */
+.coin-3d{width:112px;height:112px;margin:12px auto 18px;border-radius:50%;display:grid;place-items:center;font-size:40px;font-weight:950;color:#4a2c00;background:radial-gradient(circle at 30% 25%,#fff2a8,#f6c64c 42%,#a96b13 76%,#ffe38a);border:7px ridge #e5b74e;box-shadow:0 12px 28px #0008,inset 0 0 0 4px #fff6;transform-style:preserve-3d}
+.coin-3d.flipping{animation:coinToss 1.35s cubic-bezier(.18,.72,.24,1) both}
+@keyframes coinToss{0%{transform:translateY(0) rotateY(0) rotateZ(0)}35%{transform:translateY(-72px) rotateY(720deg) rotateZ(18deg)}70%{transform:translateY(-25px) rotateY(1440deg) rotateZ(-10deg)}100%{transform:translateY(0) rotateY(1800deg) rotateZ(0)}}
+.gm-reel.spinning{animation:reelBlur .13s linear infinite;filter:blur(.5px)}
+@keyframes reelBlur{0%{transform:translateY(-5px);opacity:.72}50%{transform:translateY(5px);opacity:1}100%{transform:translateY(-5px);opacity:.72}}
+.plinko-board{position:relative;width:min(430px,100%);height:230px;margin:10px auto 0;padding:14px 8px 30px;overflow:hidden;border-radius:16px;background:linear-gradient(180deg,#14182a,#0b1020);border:1px solid #ffffff20}
+.plinko-pegs{display:flex;flex-direction:column;align-items:center;gap:12px;height:100%}.plinko-row{display:flex;justify-content:center;gap:19px}.plinko-peg{width:7px;height:7px;border-radius:50%;background:#c6a6ff;box-shadow:0 0 9px #b68aff}
+.plinko-ball{position:absolute;top:8px;left:50%;width:13px;height:13px;border-radius:50%;background:#ffdb6e;box-shadow:0 0 16px #ffc84b;transform:translateX(-50%)}
+.plinko-ball.dropping{animation:plinkoDrop 1.25s ease-in forwards}
+@keyframes plinkoDrop{0%{top:8px;left:50%}20%{top:48px;left:42%}40%{top:88px;left:58%}60%{top:128px;left:46%}80%{top:170px;left:62%}100%{top:202px;left:var(--landing,50%)}}
+.gm-table-felt{width:min(520px,100%);margin:12px auto;padding:20px;border:7px solid #8a633a;border-radius:45% / 24%;background:radial-gradient(ellipse,#146b4d,#073b2b 70%);box-shadow:inset 0 0 25px #0008}
+.gm-dice{display:flex;justify-content:center;gap:12px;font-size:52px;margin:10px}
+.gm-number-ball{display:inline-grid;place-items:center;width:68px;height:68px;border-radius:50%;font-size:27px;font-weight:900;background:radial-gradient(circle at 30% 25%,#fff,#d8d8e4 55%,#888);color:#161624;box-shadow:0 8px 20px #0008}
+.gm-reel{transition:transform .15s}
+
+
+/* V14 casino-specific room artwork */
+.gm-visual .room-art{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:10px;width:48%;min-height:150px}
+.gm-visual .room-orb{width:clamp(54px,8vw,88px);height:clamp(54px,8vw,88px);display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#ffffff30,#ffffff08);border:1px solid #ffffff55;box-shadow:0 12px 30px #0005,inset 0 1px #fff6;font-size:clamp(30px,5vw,52px);animation:roomFloat 2.6s ease-in-out infinite}
+.gm-visual .room-orb:nth-child(3){animation-delay:-.8s}
+.gm-visual .room-orb.card{border-radius:12px;background:linear-gradient(145deg,#fff,#dcd7f2);color:#27213e;border:2px solid #fff;font-weight:950}
+.gm-visual .room-orb.coin{border-radius:50%;background:radial-gradient(circle at 32% 25%,#fff6b6,#e9b83e 42%,#87520a 75%,#f8d66a);color:#5c3905;border:5px double #ffed9a}
+.gm-visual .room-orb.wheel{border-radius:50%;background:conic-gradient(#ffcf55 0 45deg,#9e69ff 45deg 90deg,#44d6b0 90deg 135deg,#ff6689 135deg 180deg,#ffcf55 180deg 225deg,#9e69ff 225deg 270deg,#44d6b0 270deg 315deg,#ff6689 315deg);color:#20142f;border:5px solid #f5d98b;animation:roomSpin 8s linear infinite}
+.gm-visual .room-orb.ball{border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff,#d9d9e8 20%,var(--gm-accent) 70%);color:#fff;width:24px;height:24px;font-size:12px}
+.gm-visual .plinko-board{position:relative;width:min(100%,260px);padding:8px 10px 0;border:1px solid #ffffff55;border-radius:12px;background:#070b18aa;box-shadow:0 0 25px #0006}
+.gm-visual .plinko-row{display:flex;justify-content:center;gap:10px;height:15px}
+.gm-visual .plinko-row i{width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 7px var(--gm-accent)}
+.gm-visual .plinko-ball{position:absolute;top:8px;left:50%;color:#ffe36c;text-shadow:0 0 12px #ffe36c;animation:plinkoDrop 2.4s ease-in infinite}
+.gm-visual .plinko-bins{display:flex;justify-content:space-around;color:#fff;font-size:9px;padding:7px 0;background:#ffffff12}
+@keyframes plinkoDrop{0%{transform:translate(-50%,0)}45%{transform:translate(28px,65px)}100%{transform:translate(-30px,130px)}}
+.gm-visual .tile-preview{display:grid;grid-template-columns:repeat(5,25px);gap:5px;padding:10px;border-radius:12px;background:#07101dcc;border:1px solid #ffffff44}
+.gm-visual .tile-preview i,.gm-visual .number-board i{display:grid;place-items:center;width:25px;height:25px;border-radius:6px;background:#1b3150;color:#9edaff;font-size:12px;font-style:normal;animation:tilePulse 2s ease-in-out infinite}
+.gm-visual .tile-preview i.hot{background:#6b2739;color:#ffd3dc}
+@keyframes tilePulse{50%{filter:brightness(1.7);transform:translateY(-2px)}}
+.gm-visual .number-board{display:grid;grid-template-columns:repeat(5,29px);gap:5px;padding:10px;border-radius:12px;background:#07101dcc;border:1px solid #ffffff44}
+.gm-visual .number-board i{width:29px;height:29px;border-radius:50%;background:#193e66;color:#d9f4ff}
+.gm-visual .multiplier-display{font-size:clamp(34px,6vw,62px);font-weight:1000;color:#fff;text-shadow:0 0 22px var(--gm-accent);animation:multPulse 1.5s ease-in-out infinite}
+@keyframes multPulse{50%{transform:scale(1.08);text-shadow:0 0 34px var(--gm-accent)}}
+@media(max-width:600px){.gm-visual .room-art{width:42%;min-height:120px}.gm-visual .tile-preview{grid-template-columns:repeat(5,18px);gap:3px}.gm-visual .tile-preview i{width:18px;height:18px}.gm-visual .number-board{grid-template-columns:repeat(5,21px);gap:3px}.gm-visual .number-board i{width:21px;height:21px}}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></div>
+      <div class="brand-name">VOL<span>TA</span></div>
+    </div>
+
+    <div>
+      <div class="nav-label">Game Categories</div>
+      <nav class="nav" id="nav"></nav>
+    </div>
+
+    <div>
+      <div class="nav-label">More</div>
+      <nav class="nav" id="nav2"></nav>
+      <div class="nav-label" style="margin-top:18px">Account</div>
+      <nav class="nav">
+        <button data-page="wallet" class="account-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 9h19M16 14h2"/></svg><span>Wallet</span></button>
+        <button data-page="bank" class="account-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9h18M5 9v10m4-10v10m6-10v10m4-10v10M3 21h18M12 3 2 8h20z"/></svg><span>Banking</span></button>
+        <button data-page="history" class="account-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg><span>Transactions</span></button>
+      </nav>
+    </div>
+
+    <div class="vip">
+      <h4>Level 14 <b>GOLD VIP</b></h4>
+      <div class="bar"><i></i></div>
+      <p>64% to Platinum — 3,820 XP to go</p>
+    </div>
+  </aside>
+
+  <!-- CENTER -->
+  <div class="center">
+    <header class="top">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" placeholder="Search games, providers…" autocomplete="off">
+      </label>
+      <div class="top-right">
+        <div class="wallet">
+          <span class="coin"></span>
+          <div><div class="amt" id="bal">1,000.00</div><div class="tag">Demo credits</div></div>
+          <button class="btn-dep" id="topup">+ Top up</button>
+        </div>
+        <div class="avatar">Y</div>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="hero">
+        <div style="position:relative;z-index:1">
+          <span class="pill"><span class="dot"></span> Demo mode</span>
+          <h1>VOLTA <em>Originals</em>, built for play.</h1>
+          <p>Explore VOLTA Originals with a transparent demo-credit wallet. No real-money play. No deposits, no risk — just the thrill of the multiplier.</p>
+          <div class="cta">
+            <button class="btn btn-primary" onclick="document.getElementById('featured').scrollIntoView({behavior:'smooth'})">Play Featured</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('lobby').scrollIntoView({behavior:'smooth'})">Browse Lobby</button>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><small>Game catalogue</small><b class="g" id="s-online">70+ Games</b></div>
+          <div class="stat"><small>Play mode</small><b class="p" id="s-wager">DEMO ONLY</b></div>
+          <div class="stat"><small>Wallet</small><b id="s-big">LOCAL CREDITS</b></div>
+        </div>
+      </section>
+
+      <section id="featured">
+        <div class="sec-h"><h2>Featured Games</h2><span>Demo mode · play credits only</span></div>
+        <div class="featured">
+
+          <!-- DICE -->
+          <article class="game">
+            <div class="game-h">
+              <h3>Dice <span class="badge g">Original</span></h3>
+              <span class="rtp">RTP 99%</span>
+            </div>
+            <div class="game-body">
+              <div class="stage dice-stage">
+                <div class="dice-num" id="d-num">50.00</div>
+                <div>
+                  <div class="track-wrap">
+                    <div class="track" id="d-track"></div>
+                    <div class="marker" id="d-marker" style="top:2px"><i></i></div>
+                  </div>
+                  <div class="ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+                </div>
+              </div>
+              <div class="hist" id="d-hist"></div>
+              <div class="ctrl">
+                <div class="row2">
+                  <div class="field">
+                    <label>Bet amount</label>
+                    <div class="input"><input id="d-bet" type="number" min="0.1" step="0.1" value="10"><button class="mini" data-d="half">½</button><button class="mini" data-d="dbl">2×</button></div>
+                  </div>
+                  <div class="field">
+                    <label>Mode</label>
+                    <div class="seg" id="d-mode"><button data-m="under">Roll Under</button><button data-m="over" class="on">Roll Over</button></div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label><span>Target</span><span id="d-target-l">50.00</span></label>
+                  <input type="range" id="d-range" min="2" max="98" step="0.01" value="50">
+                </div>
+                <div class="info">
+                  <div><small>Multiplier</small><b id="d-mult">1.98×</b></div>
+                  <div><small>Win chance</small><b id="d-chance">50.00%</b></div>
+                  <div><small>Profit on win</small><b class="pos" id="d-profit">+9.80</b></div>
+                </div>
+                <button class="play" id="d-roll">Roll Dice</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- CRASH -->
+          <article class="game">
+            <div class="game-h">
+              <h3>Crash <span class="badge p">Original</span></h3>
+              <span class="rtp">RTP 97%</span>
+            </div>
+            <div class="game-body">
+              <div class="stage crash-stage">
+                <canvas id="c-canvas"></canvas>
+                <div class="crash-mult wait" id="c-mult"><b id="c-val">5.0s</b><small id="c-sub">Next round</small></div>
+              </div>
+              <div class="hist" id="c-hist"></div>
+              <div class="ctrl">
+                <div class="row2">
+                  <div class="field">
+                    <label>Bet amount</label>
+                    <div class="input"><input id="c-bet" type="number" min="0.1" step="0.1" value="10"><button class="mini" data-c="half">½</button><button class="mini" data-c="dbl">2×</button></div>
+                  </div>
+                  <div class="field">
+                    <label>Auto cash out</label>
+                    <div class="input"><input id="c-auto" type="number" min="1.01" step="0.01" value="2.00"><span class="u">×</span></div>
+                  </div>
+                </div>
+                <div class="info">
+                  <div><small>Your bet</small><b id="c-mybet">—</b></div>
+                  <div><small>Potential</small><b class="pos" id="c-pot">—</b></div>
+                  <div><small>Round</small><b id="c-round">#1</b></div>
+                </div>
+                <button class="play" id="c-btn">Place Bet</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="lobby">
+        <div class="sec-h"><h2 id="lobby-title">Lobby</h2><span id="lobby-count"></span></div>
+        <div class="grid" id="grid"></div>
+        <div class="demo-note">VOLTA demo environment · credits have no cash value and cannot be withdrawn.</div>
+      </section>
+
+      <section id="wallet-page">
+        <div class="page-head">
+          <div><div class="eyebrow">VOLTA ACCOUNT</div><h1>Wallet & transactions</h1><p>Manage your play credits and review every balance movement.</p></div>
+          <span class="demo-stamp"><i></i> Demo credits only</span>
+        </div>
+        <div class="wallet-hero">
+          <div class="balance-card">
+            <div class="label">Available demo balance</div>
+            <div class="big-balance" id="wallet-balance">1,000.00</div>
+            <div class="sub">VOLTA play credits · No cash value</div>
+            <div class="balance-actions">
+              <button class="action-bright" id="wallet-add">＋ Add demo credits</button>
+              <button class="action-soft" id="wallet-reset">Reset demo wallet</button>
+            </div>
+          </div>
+          <div class="wallet-side-stats">
+            <div class="wallet-stat"><small>Total added</small><b id="w-added">0.00</b><span>Demo credits added</span></div>
+            <div class="wallet-stat"><small>Total wagered</small><b id="w-wagered">0.00</b><span>Across recorded games</span></div>
+            <div class="wallet-stat"><small>Net game result</small><b id="w-net">0.00</b><span>Game wins minus stakes</span></div>
+            <div class="wallet-stat"><small>Transactions</small><b id="w-count">0</b><span>Saved on this device</span></div>
+          </div>
+        </div>
+        <div class="wallet-panel">
+          <div class="panel-title"><div><h2>Add play credits</h2><p>Choose a demo amount. No payment method is used.</p></div><span class="demo-stamp"><i></i> Free demo</span></div>
+          <div class="quick-amounts">
+            <button data-add="500">+ 500</button><button data-add="1000">+ 1,000</button><button data-add="2500">+ 2,500</button><button data-add="5000">+ 5,000</button>
+          </div>
+        </div>
+        <div class="real-money-panel"><div><b>Real-money mode · Not available</b><small>VOLTA is configured for demo credits only. No cash deposits, withdrawals, or payment processing are enabled.</small></div><button type="button" disabled aria-disabled="true">Unavailable</button></div>
+        <div class="wallet-panel" id="transactions-panel">
+          <div class="panel-title"><div><h2>Transaction history</h2><p>A local ledger of demo-credit activity on this device.</p></div><span id="tx-count-label" class="demo-stamp">0 records</span></div>
+          <div class="wallet-toolbar">
+            <input id="tx-search" type="search" placeholder="Search transactions…">
+            <select id="tx-filter"><option value="all">All activity</option><option value="credit">Credits added</option><option value="bet">Game stakes</option><option value="win">Game returns</option><option value="refund">Refunds</option></select>
+            <button id="tx-export">Export CSV</button>
+          </div>
+          <div class="tx-wrap"><table class="tx-table"><thead><tr><th>Activity</th><th>Date & time</th><th>Amount</th><th>Balance after</th><th>Status</th></tr></thead><tbody id="tx-body"></tbody></table></div>
+          <div class="wallet-foot"><span id="tx-summary">Showing latest activity</span><span>Newest first</span></div>
+        </div>
+      </section>
+
+      <section id="bank-page">
+        <div class="page-head"><div><div class="eyebrow">VOLTA FINANCIAL HUB</div><h1>Demo Banking</h1><p>A virtual vault for moving play credits between your wallet and savings balance.</p></div><span class="demo-stamp"><i></i> Simulation only</span></div>
+        <div class="bank-hero">
+          <div class="bank-card"><div class="bank-label">VOLTA VIRTUAL VAULT</div><div class="bank-balance" id="bank-balance">0.00</div><div class="sub">Demo savings credits · No cash value</div><div class="bank-meta"><span>Virtual account</span><b id="bank-account">VLT-DEMO-000000</b></div></div>
+          <div class="wallet-side-stats"><div class="wallet-stat"><small>Play wallet</small><b id="bank-wallet-balance">0.00</b><span>Available demo credits</span></div><div class="wallet-stat"><small>Vault transfers in</small><b id="bank-in-total">0.00</b><span>Lifetime simulated deposits</span></div><div class="wallet-stat"><small>Vault transfers out</small><b id="bank-out-total">0.00</b><span>Lifetime simulated withdrawals</span></div><div class="wallet-stat"><small>Bank activity</small><b id="bank-count">0</b><span>Local records on this device</span></div></div>
+        </div>
+        <div class="bank-disclaimer">Demo banking only: this is not a bank account. Account identifiers are fictional. Transfers only move VOLTA demo credits between your on-device play wallet and virtual vault. No UPI, cards, bank APIs, deposits, cash-outs, or real-money transfers are connected.</div>
+        <div class="bank-forms">
+          <div class="bank-form"><h3>＋ Move credits to vault</h3><p>Transfer demo credits from your VOLTA play wallet into virtual savings.</p><input id="bank-deposit-amount" type="number" min="0.01" step="0.01" placeholder="Amount in demo credits"><button id="bank-deposit">Transfer to vault</button></div>
+          <div class="bank-form"><h3>↗ Move credits to wallet</h3><p>Return demo credits from your virtual vault to your play wallet.</p><input id="bank-withdraw-amount" type="number" min="0.01" step="0.01" placeholder="Amount in demo credits"><button id="bank-withdraw">Transfer to wallet</button></div>
+        </div>
+        <div class="bank-log"><div class="panel-title"><div><h2>Vault activity</h2><p>Recent simulated banking movements</p></div><span class="demo-stamp">Local ledger</span></div><div id="bank-log-list"></div></div>
+      </section>
+      <section id="v4-page" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <!-- LIVE FEED -->
+  <aside class="feed">
+    <div class="feed-h">
+      <h3><span class="dot"></span> Simulated demo feed</h3>
+      <div class="tabs" id="tabs"><button class="on" data-t="live">Live Bets</button><button data-t="top">Top Winners</button></div>
+    </div>
+    <div class="feed-cols"><span id="col-a">Player</span><span id="col-b">Payout</span></div>
+    <ul class="list" id="list"></ul>
+    <div class="feed-foot"><span>Bets / min <b id="f-bpm">0</b></span><span>Total paid <b id="f-paid">$0</b></span></div>
+  </aside>
+</div>
+<div class="toast" id="toast"></div>
+
+
+<div class="game-modal" id="game-modal" role="dialog" aria-modal="true" aria-label="VOLTA demo game">
+ <div class="gm-card" id="gm-card">
+  <div class="gm-top"><div><div class="eyebrow">VOLTA GAME EXPERIENCE · DEMO</div><div class="gm-title" id="gm-title">Game</div><div class="gm-sub" id="gm-sub">Play with demo credits only</div></div><button class="gm-close" id="gm-close">✕ Close</button></div>
+  <div class="gm-visual" id="gm-visual" aria-label="Game artwork"></div>
+  <div class="gm-stage" id="gm-stage"><div class="gm-result" id="gm-result">Ready?</div><div class="gm-caption" id="gm-caption">Set your demo stake to begin.</div></div>
+  <div class="gm-controls" id="gm-controls"></div>
+  <div class="gm-actions" id="gm-actions"></div>
+  <div class="gm-note">Demo simulation only. Outcomes are generated locally for entertainment; demo credits have no cash value and cannot be deposited, sold, or withdrawn.</div>
+ </div>
+</div>
+
+<script>
+/* ===== helpers ===== */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const fmt = n => n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const rand = (a,b) => Math.random()*(b-a)+a;
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const STORE_KEY = 'volta-demo-wallet-v2';
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch(e) {}
+let balance = Number.isFinite(saved.balance) ? Math.max(0, saved.balance) : 1000;
+let transactions = Array.isArray(saved.transactions) ? saved.transactions : [];
+let walletStats = saved.stats || {added:0,wagered:0,gameNet:0};
+const BANK_KEY='volta-demo-bank-v1';
+let bankSaved={};try{bankSaved=JSON.parse(localStorage.getItem(BANK_KEY)||'{}')||{};}catch(e){}
+let bankBalance=Number.isFinite(bankSaved.balance)?Math.max(0,bankSaved.balance):0;
+let bankLog=Array.isArray(bankSaved.log)?bankSaved.log:[];
+let bankTotals=bankSaved.totals||{in:0,out:0};
+let bankAccount=bankSaved.account||('VLT-DEMO-'+String(Math.floor(100000+Math.random()*900000)));
+function persistBank(){try{localStorage.setItem(BANK_KEY,JSON.stringify({balance:bankBalance,log:bankLog,totals:bankTotals,account:bankAccount}));}catch(e){}}
+function bankMove(direction){const field=direction==='in'?'#bank-deposit-amount':'#bank-withdraw-amount';const amount=Math.round(Number($(field).value)*100)/100;if(!(amount>0)||!Number.isFinite(amount)){toast('Enter a valid transfer amount',true);return;}if(direction==='in'&&amount>balance){toast('Not enough demo credits in your play wallet',true);return;}if(direction==='out'&&amount>bankBalance){toast('Not enough credits in your virtual vault',true);return;}if(direction==='in'){bankBalance=Math.round((bankBalance+amount)*100)/100;bankTotals.in+=amount;setBal(balance-amount,'Transfer to VOLTA demo vault','transfer');}else{bankBalance=Math.round((bankBalance-amount)*100)/100;bankTotals.out+=amount;setBal(balance+amount,'Transfer from VOLTA demo vault','transfer');}const item={id:'BK-'+Date.now(),direction,amount,time:new Date().toISOString(),balance:bankBalance};bankLog.unshift(item);bankLog=bankLog.slice(0,100);persistBank();renderBank();$(field).value='';toast(direction==='in'?'Credits moved to virtual vault':'Credits returned to play wallet');}
+function renderBank(){if(!$('#bank-page'))return;$('#bank-balance').textContent=fmt(bankBalance);$('#bank-wallet-balance').textContent=fmt(balance);$('#bank-in-total').textContent=fmt(bankTotals.in||0);$('#bank-out-total').textContent=fmt(bankTotals.out||0);$('#bank-count').textContent=bankLog.length;$('#bank-account').textContent=bankAccount;$('#bank-log-list').innerHTML=bankLog.length?bankLog.slice(0,20).map(x=>`<div class="bank-log-row"><div><b>${x.direction==='in'?'Transfer to vault':'Transfer to wallet'}</b><small>${new Date(x.time).toLocaleString()} · ${x.id}</small></div><b>${x.direction==='in'?'+':'−'}${fmt(x.amount)}</b></div>`).join(''):'<div class="v4-empty">No banking activity yet. Your simulated transfers will appear here.</div>';}
+let ledgerReason = 'Balance adjustment';
+const persistWallet = () => {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify({balance,transactions,stats:walletStats})); } catch(e) {}
+};
+function recordTransaction(amount, reason, type) {
+  const entry = {id:'TX-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase(), amount, reason, type, balance, time:new Date().toISOString()};
+  transactions.unshift(entry);
+  transactions = transactions.slice(0,500);
+  if(type==='credit') walletStats.added += amount;
+  if(type==='bet') walletStats.wagered += Math.abs(amount);
+  if(type==='bet' || type==='win' || type==='refund') walletStats.gameNet += amount;
+  persistWallet();
+  if($('#wallet-page')) renderWallet();
+}
+function setBal(v, reason='Balance adjustment', type='adjustment'){
+  const next = Math.max(0, Math.round(v*100)/100);
+  const delta = Math.round((next-balance)*100)/100;
+  balance = next;
+  $('#bal').textContent = fmt(balance);
+  if(Math.abs(delta)>=0.001) recordTransaction(delta, reason, type);
+  else persistWallet();
+}
+let toastT;
+function toast(msg, bad){
+  const t = $('#toast'); t.textContent = msg; t.classList.toggle('bad', !!bad); t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function readBet(input){
+  const v = parseFloat(input.value);
+  if(!(v>0)){ toast('Enter a valid bet', true); return null; }
+  if(v>balance){ toast('Insufficient demo credits', true); return null; }
+  return Math.round(v*100)/100;
+}
+function addDemoCredits(amount){
+  setBal(balance+amount, 'Demo credits added', 'credit');
+  toast('+'+fmt(amount)+' demo credits added');
+}
+$('#bal').textContent=fmt(balance);
+$('#topup').onclick = () => { addDemoCredits(1000); };
+$('#wallet-add').onclick = () => addDemoCredits(1000);
+$$('[data-add]').forEach(b=>b.onclick=()=>addDemoCredits(Number(b.dataset.add)));
+$('#wallet-reset').onclick = () => {
+  if(!confirm('Reset the demo wallet to 1,000 credits and clear its transaction history?')) return;
+  balance=1000; transactions=[]; walletStats={added:0,wagered:0,gameNet:0};
+  persistWallet(); $('#bal').textContent=fmt(balance); renderWallet(); toast('Demo wallet reset');
+};
+
+/* ===== icons / nav ===== */
+const I = {
+  lobby:'<path d="M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  originals:'<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>',
+  slots:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M9 5v14M15 5v14"/>',
+  live:'<circle cx="12" cy="12" r="3"/><path d="M5 12a7 7 0 0 1 7-7M19 12a7 7 0 0 1-7 7M2 12a10 10 0 0 1 10-10M22 12a10 10 0 0 1-10 10"/>',
+  table:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/>',
+  promo:'<path d="M20 12v9H4v-9M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7zm0 0h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z"/>',
+  sport:'<circle cx="12" cy="12" r="9"/><path d="m12 7 4 3-1.5 5h-5L8 10z"/>',
+  vip:'<path d="m3 8 4 4 5-8 5 8 4-4-2 12H5z"/>'
+};
+const ico = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
+
+const GAMES = [
+  {n:'Dice',c:'originals',p:'Volta Originals',g:'⚀',a:'linear-gradient(135deg,#1a0f3a,#6d33e0)',gl:'#9b5cff',t:'ORIGINAL'},
+  {n:'Crash',c:'originals',p:'Volta Originals',g:'↗',a:'linear-gradient(135deg,#052a18,#14c765)',gl:'#2bff88',t:'ORIGINAL'},
+  {n:'Plinko',c:'originals',p:'Volta Originals',g:'▼',a:'linear-gradient(135deg,#2a0f3f,#c2398f)',gl:'#ff5cc8',t:'ORIGINAL'},
+  {n:'Mines',c:'originals',p:'Volta Originals',g:'✦',a:'linear-gradient(135deg,#0c1f3a,#2b7bff)',gl:'#4da0ff',t:'ORIGINAL'},
+  {n:'Limbo',c:'originals',p:'Volta Originals',g:'∞',a:'linear-gradient(135deg,#1c0f3a,#2bff88)',gl:'#2bff88',t:'ORIGINAL'},
+  {n:'Neon Fruits',c:'slots',p:'PixelForge',g:'7',a:'linear-gradient(135deg,#3a0f2a,#ff4d6d)',gl:'#ff4d6d'},
+  {n:'Gates of Olympus',c:'slots',p:'Skyline Labs',g:'Ω',a:'linear-gradient(135deg,#2a1a05,#e8a317)',gl:'#ffcb47'},
+  {n:'Cyber Samurai',c:'slots',p:'PixelForge',g:'刀',a:'linear-gradient(135deg,#0a1a2a,#8a3dff)',gl:'#a56bff'},
+  {n:'Wild Bonanza',c:'slots',p:'Reelstorm',g:'$',a:'linear-gradient(135deg,#0c2a1c,#1fd47a)',gl:'#2bff88'},
+  {n:'Lightning Roulette',c:'live',p:'Simulated Studio',g:'◎',a:'linear-gradient(135deg,#1a0a2e,#ffd45e)',gl:'#ffd45e',t:'LIVE'},
+  {n:'Crazy Time',c:'live',p:'Simulated Studio',g:'◐',a:'linear-gradient(135deg,#2e0a1f,#ff5cc8)',gl:'#ff5cc8',t:'LIVE'},
+  {n:'Speed Baccarat',c:'live',p:'Simulated Studio',g:'♠',a:'linear-gradient(135deg,#0a1f2e,#2bb3ff)',gl:'#4dc3ff',t:'LIVE'},
+  {n:'Blackjack VIP',c:'table',p:'Table Co.',g:'21',a:'linear-gradient(135deg,#06201a,#0fa86b)',gl:'#2bff88'},
+  {n:'Euro Roulette',c:'table',p:'Table Co.',g:'0',a:'linear-gradient(135deg,#240a14,#d4314f)',gl:'#ff4d6d'},
+  {n:'Texas Hold’em',c:'table',p:'Table Co.',g:'♥',a:'linear-gradient(135deg,#150a2e,#7a47ff)',gl:'#9b5cff'},
+  {n:'Sweet Cascade',c:'slots',p:'Reelstorm',g:'✿',a:'linear-gradient(135deg,#2e0a2a,#ff7ad9)',gl:'#ff7ad9'},
+{n:'French Roulette',c:'table',p:'Table Co.',g:'⚪',a:'linear-gradient(135deg,#24120b,#d9a441)',gl:'#f5c75e'},
+  {n:'American Roulette',c:'table',p:'Table Co.',g:'00',a:'linear-gradient(135deg,#240a14,#d4314f)',gl:'#ff647f'},
+  {n:'Dragon Tiger',c:'table',p:'Table Co.',g:'🐉',a:'linear-gradient(135deg,#25120d,#b94c2c)',gl:'#ff9a58'},
+  {n:'Sic Bo',c:'table',p:'Table Co.',g:'🎲',a:'linear-gradient(135deg,#18220d,#8ba83d)',gl:'#c7e879'},
+  {n:'Craps',c:'table',p:'Table Co.',g:'🎲',a:'linear-gradient(135deg,#102c24,#229c70)',gl:'#55e3ad'},
+  {n:'Casino War',c:'table',p:'Table Co.',g:'⚔️',a:'linear-gradient(135deg,#191d35,#6079c9)',gl:'#91a8ff'},
+  {n:'Three Card Poker',c:'table',p:'Table Co.',g:'♠',a:'linear-gradient(135deg,#101d2c,#287e9c)',gl:'#70d8ef'},
+  {n:'Video Poker',c:'table',p:'Table Co.',g:'🂡',a:'linear-gradient(135deg,#1b1032,#8050bd)',gl:'#bd92ff'},
+  {n:'Bingo',c:'originals',p:'VOLTA Casino',g:'🔵',a:'linear-gradient(135deg,#10284a,#287ed0)',gl:'#73c4ff'},
+  {n:'Scratch Cards',c:'originals',p:'VOLTA Casino',g:'🎟️',a:'linear-gradient(135deg,#3b1b0b,#c8792b)',gl:'#ffbd70'},
+  {n:'Fan Tan',c:'table',p:'Table Co.',g:'🟠',a:'linear-gradient(135deg,#2b1c12,#ad7c3c)',gl:'#f0c47a'},
+  {n:'Red Dog',c:'table',p:'Table Co.',g:'♦',a:'linear-gradient(135deg,#2d101c,#b73558)',gl:'#ff7b9c'},
+  {n:'Wheel of Fortune',c:'live',p:'Simulated Studio',g:'🎡',a:'linear-gradient(135deg,#30102d,#bd4ca9)',gl:'#ff8be4'},
+  {n:'Caribbean Stud',c:'table',p:'Table Co.',g:'🌴',a:'linear-gradient(135deg,#10312a,#1c9b83)',gl:'#69f0c9'},
+  {n:'Ultimate Texas Hold’em',c:'table',p:'Table Co.',g:'♥',a:'linear-gradient(135deg,#1b1234,#7144b8)',gl:'#b68cff'},
+  {n:'Keno Deluxe',c:'originals',p:'VOLTA Casino',g:'▦',a:'linear-gradient(135deg,#172442,#466fc2)',gl:'#8eafff'},
+  {n:'Coin Flip',c:'originals',p:'Volta Originals',g:'🪙',a:'linear-gradient(135deg,#342408,#d8a72c)',gl:'#ffd45e',t:'NEW'},
+  {n:'Hi-Lo',c:'originals',p:'Volta Originals',g:'↕',a:'linear-gradient(135deg,#082b35,#12a8b7)',gl:'#48e4ef',t:'NEW'},
+  {n:'Keno',c:'originals',p:'Volta Originals',g:'▦',a:'linear-gradient(135deg,#142342,#527cff)',gl:'#78a1ff',t:'NEW'},
+  {n:'Tower',c:'originals',p:'Volta Originals',g:'♜',a:'linear-gradient(135deg,#28113c,#b05cff)',gl:'#c58aff',t:'NEW'},
+  {n:'Prize Wheel',c:'originals',p:'Volta Originals',g:'◉',a:'linear-gradient(135deg,#3b1025,#fa568c)',gl:'#ff77a6',t:'NEW'},
+  
+  {n:'Astro Dash',c:'arcade',p:'VOLTA Arcade',g:'🚀',a:'linear-gradient(135deg,#111b45,#4778ff)',gl:'#83aaff',t:'NEW',mode:'space'},
+  {n:'Neon Runner',c:'arcade',p:'VOLTA Arcade',g:'🏃',a:'linear-gradient(135deg,#102b36,#16a6a6)',gl:'#50e8dc',t:'NEW',mode:'reflex'},
+  {n:'Cyber Drift',c:'arcade',p:'VOLTA Arcade',g:'🏎️',a:'linear-gradient(135deg,#35121b,#ed4d67)',gl:'#ff7186',t:'NEW',mode:'race'},
+  {n:'Pixel Invaders',c:'arcade',p:'VOLTA Arcade',g:'👾',a:'linear-gradient(135deg,#20133e,#8a52dc)',gl:'#b78cff',t:'NEW',mode:'arcade'},
+  {n:'Rocket Rescue',c:'arcade',p:'VOLTA Arcade',g:'🛸',a:'linear-gradient(135deg,#102b3d,#26a5c9)',gl:'#64dfff',t:'NEW',mode:'space'},
+  {n:'Jungle Jump',c:'arcade',p:'VOLTA Arcade',g:'🌴',a:'linear-gradient(135deg,#10331f,#3baf68)',gl:'#6ee69a',t:'NEW',mode:'reflex'},
+  {n:'Turbo Kart',c:'arcade',p:'VOLTA Arcade',g:'🏁',a:'linear-gradient(135deg,#3a1d0d,#db812e)',gl:'#ffb36a',t:'NEW',mode:'race'},
+  {n:'Sky Glider',c:'arcade',p:'VOLTA Arcade',g:'🪂',a:'linear-gradient(135deg,#122d4b,#3f9bd4)',gl:'#80caff',t:'NEW',mode:'space'},
+  {n:'Laser Maze',c:'puzzle',p:'VOLTA Puzzles',g:'🔦',a:'linear-gradient(135deg,#24133c,#a05ce0)',gl:'#c59aff',t:'NEW',mode:'puzzle'},
+  {n:'Memory Match',c:'puzzle',p:'VOLTA Puzzles',g:'🧠',a:'linear-gradient(135deg,#17244b,#5574d9)',gl:'#9bb0ff',t:'NEW',mode:'memory'},
+  {n:'Color Sequence',c:'puzzle',p:'VOLTA Puzzles',g:'🎨',a:'linear-gradient(135deg,#381b38,#d45bb5)',gl:'#ff9be0',t:'NEW',mode:'memory'},
+  {n:'Number Grid',c:'puzzle',p:'VOLTA Puzzles',g:'🔢',a:'linear-gradient(135deg,#12343b,#27a4a0)',gl:'#72e8dd',t:'NEW',mode:'puzzle'},
+  {n:'Shape Shift',c:'puzzle',p:'VOLTA Puzzles',g:'🔷',a:'linear-gradient(135deg,#1d2446,#6677df)',gl:'#a8b3ff',t:'NEW',mode:'puzzle'},
+  {n:'Word Sprint',c:'puzzle',p:'VOLTA Puzzles',g:'🔤',a:'linear-gradient(135deg,#3b2514,#c48b3c)',gl:'#ffd08a',t:'NEW',mode:'memory'},
+  {n:'Pattern Path',c:'puzzle',p:'VOLTA Puzzles',g:'🧩',a:'linear-gradient(135deg,#173b2a,#42a979)',gl:'#8af0bd',t:'NEW',mode:'puzzle'},
+  {n:'Logic Lock',c:'puzzle',p:'VOLTA Puzzles',g:'🔐',a:'linear-gradient(135deg,#20233b,#777bb5)',gl:'#b9bcff',t:'NEW',mode:'puzzle'},
+  {n:'Penalty Shootout',c:'sports',p:'VOLTA Sports',g:'⚽',a:'linear-gradient(135deg,#10351e,#36a85b)',gl:'#81e99c',t:'NEW',mode:'sports'},
+  {n:'Basketball Shot',c:'sports',p:'VOLTA Sports',g:'🏀',a:'linear-gradient(135deg,#3b1e10,#d97834)',gl:'#ffb27b',t:'NEW',mode:'sports'},
+  {n:'Tennis Ace',c:'sports',p:'VOLTA Sports',g:'🎾',a:'linear-gradient(135deg,#263b12,#9abf35)',gl:'#d3f27a',t:'NEW',mode:'sports'},
+  {n:'Cricket Challenge',c:'sports',p:'VOLTA Sports',g:'🏏',a:'linear-gradient(135deg,#102d38,#2999aa)',gl:'#83e8f1',t:'NEW',mode:'sports'},
+  {n:'Bowling Strike',c:'sports',p:'VOLTA Sports',g:'🎳',a:'linear-gradient(135deg,#251c45,#7954c9)',gl:'#b69aff',t:'NEW',mode:'sports'},
+  {n:'Golf Putt',c:'sports',p:'VOLTA Sports',g:'⛳',a:'linear-gradient(135deg,#143a2b,#3aab78)',gl:'#8af0bf',t:'NEW',mode:'sports'},
+  {n:'Racing Rivals',c:'sports',p:'VOLTA Sports',g:'🏆',a:'linear-gradient(135deg,#3b1717,#cf4b4b)',gl:'#ff9292',t:'NEW',mode:'race'},
+  {n:'Darts Master',c:'sports',p:'VOLTA Sports',g:'🎯',a:'linear-gradient(135deg,#3b1b25,#d54b76)',gl:'#ff9cba',t:'NEW',mode:'sports'},
+  {n:'Diamond Reels',c:'slots',p:'PixelForge',g:'💎',a:'linear-gradient(135deg,#102c42,#28a2d4)',gl:'#8be0ff',t:'NEW',mode:'reels'},
+  {n:'Golden Pharaoh',c:'slots',p:'Reelstorm',g:'𓂀',a:'linear-gradient(135deg,#3b2a0d,#c99a28)',gl:'#ffdf77',t:'NEW',mode:'reels'},
+  {n:'Moonlight Gems',c:'slots',p:'Reelstorm',g:'🌙',a:'linear-gradient(135deg,#20113e,#8052cb)',gl:'#c4a1ff',t:'NEW',mode:'reels'},
+  {n:'Ocean Treasures',c:'slots',p:'PixelForge',g:'🐚',a:'linear-gradient(135deg,#082e3b,#1a9fb4)',gl:'#76e8f2',t:'NEW',mode:'reels'},
+  {n:'Dragon Fortune',c:'slots',p:'Skyline Labs',g:'🐉',a:'linear-gradient(135deg,#3b1512,#c94a32)',gl:'#ff9b80',t:'NEW',mode:'reels'},
+  {n:'Lucky Lanterns',c:'slots',p:'Skyline Labs',g:'🏮',a:'linear-gradient(135deg,#3b1c0c,#dc7434)',gl:'#ffb27b',t:'NEW',mode:'reels'},
+  {n:'Arctic Wilds',c:'slots',p:'Reelstorm',g:'❄️',a:'linear-gradient(135deg,#122b43,#4d9acb)',gl:'#a6ddff',t:'NEW',mode:'reels'},
+  {n:'Starfall Spins',c:'slots',p:'PixelForge',g:'🌠',a:'linear-gradient(135deg,#1d1742,#795ee0)',gl:'#b9aaff',t:'NEW',mode:'reels'},
+  {n:'Pai Gow Demo',c:'table',p:'Table Co.',g:'🀄',a:'linear-gradient(135deg,#321323,#b34a75)',gl:'#f59fca',t:'NEW',mode:'table'},
+  {n:'War Cards',c:'table',p:'Table Co.',g:'⚔️',a:'linear-gradient(135deg,#1a2441,#5878ba)',gl:'#a6c2ff',t:'NEW',mode:'table'},
+  {n:'Crown & Anchor',c:'table',p:'Table Co.',g:'⚓',a:'linear-gradient(135deg,#102c3c,#388aa8)',gl:'#9be3f3',t:'NEW',mode:'table'},
+  {n:'Dice Duel',c:'originals',p:'Volta Originals',g:'🎲',a:'linear-gradient(135deg,#1b2041,#6479d6)',gl:'#a9b7ff',t:'NEW',mode:'dice'},
+  {n:'Lucky Number',c:'originals',p:'Volta Originals',g:'🍀',a:'linear-gradient(135deg,#153a22,#4fa95e)',gl:'#9be9a5',t:'NEW',mode:'number'},
+  {n:'Target 21',c:'originals',p:'Volta Originals',g:'🎯',a:'linear-gradient(135deg,#3a1d16,#cf7441)',gl:'#ffb38a',t:'NEW',mode:'number'},
+  {n:'Quick Draw',c:'arcade',p:'VOLTA Arcade',g:'⚡',a:'linear-gradient(135deg,#3b2a10,#d49a2e)',gl:'#ffe08a',t:'NEW',mode:'reflex'},
+  {n:'Treasure Hunt',c:'arcade',p:'VOLTA Arcade',g:'🗺️',a:'linear-gradient(135deg,#2e2412,#b58b38)',gl:'#f3d18b',t:'NEW',mode:'puzzle'},
+  {n:'Bubble Pop',c:'arcade',p:'VOLTA Arcade',g:'🫧',a:'linear-gradient(135deg,#102e42,#3c9ec5)',gl:'#a0e9ff',t:'NEW',mode:'reflex'},
+  {n:'Galaxy Blaster',c:'arcade',p:'VOLTA Arcade',g:'🌌',a:'linear-gradient(135deg,#1b1744,#665bd1)',gl:'#b8b0ff',t:'NEW',mode:'space'}
+];
+// V14: casino-only lobby; arcade, puzzle and sports titles are excluded.
+GAMES.splice(0, GAMES.length, ...GAMES
+.filter(game => ['originals','slots','live','table'].includes(game.c)));
+const CATS = [
+  {k:'all',l:'Lobby',i:'lobby'},
+  {k:'originals',l:'Instant Casino',i:'originals'},
+  {k:'slots',l:'Slots',i:'slots'},
+  {k:'live',l:'Casino Shows',i:'live'},
+  {k:'table',l:'Table Games',i:'table'}
+];
+let cat = 'all', query = '';
+function renderNav(){
+  $('#nav').innerHTML = CATS.map(c=>{
+    const n = c.k==='all'?GAMES.length:GAMES.filter(g=>g.c===c.k).length;
+    return `<button data-k="${c.k}" class="${c.k===cat?'active':''}">${ico(c.i)}<span>${c.l}</span><i class="cnt">${n}</i></button>`;
+  }).join('');
+  $$('#nav button').forEach(b=>b.onclick=()=>{cat=b.dataset.k;renderNav();renderGrid();showPage('home');});
+}
+$('#nav2').innerHTML = [['Promotions','promo'],['VIP Club','vip']]
+  .map(([l,i])=>`<button>${ico(i)}<span>${l}</span></button>`).join('');
+function showPage(page){
+  const homeSections = ['.hero','#featured','#lobby'];
+  homeSections.forEach(s=>{const el=$(s);if(el)el.style.display=page==='home'?'':'none';});
+  $('#wallet-page').style.display=(page==='wallet'||page==='history')?'flex':'none';
+  $('#bank-page').style.display=page==='bank'?'flex':'none';
+  $$('.account-nav').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  if(page==='bank'){renderBank();$('.content').scrollTo({top:0,behavior:'smooth'});}
+  else if(page!=='home'){renderWallet();if(page==='history')$('#transactions-panel').scrollIntoView({behavior:'smooth',block:'start'});}
+  else $('.content').scrollTo({top:0,behavior:'smooth'});
+}
+$$('.account-nav').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+$('#bank-deposit').onclick=()=>bankMove('in');$('#bank-withdraw').onclick=()=>bankMove('out');
+function renderGrid(){
+  const list = GAMES.filter(g=>(cat==='all'||g.c===cat) && (g.n+g.p).toLowerCase().includes(query));
+  const label = CATS.find(c=>c.k===cat).l;
+  $('#lobby-title').textContent = label;
+  $('#lobby-count').textContent = list.length + ' games';
+  $('#grid').innerHTML = list.length ? list.map(g=>`
+    <div class="card" style="--art:${g.a};--glow:${g.gl}">
+      ${g.t?`<span class="tag">${g.t}</span>`:''}
+      <div class="glyph">${g.g}</div>
+      <b>${g.n}</b><small>${g.p}</small>
+    </div>`).join('') : '<div class="empty">No games match your search.</div>';
+}
+$('#q').addEventListener('input',e=>{query=e.target.value.trim().toLowerCase();renderGrid();});
+
+renderNav(); renderGrid();
+
+/* ===== additional playable demo games ===== */
+const gm = {name:'',bet:10,round:0,active:false,mines:[],picked:[],cards:[],selection:'red',target:2,mode:'',phase:'idle'};
+const $gm = id => document.getElementById(id);
+const gmMoney = n => fmt(Math.max(0,Number(n)||0));
+
+const GM_CHOICES={
+'Astro Dash':['Star Gate','Moon Tunnel','Comet Lane'],'Neon Runner':['Jump','Slide','Dash'],'Cyber Drift':['Inside Line','Nitro Lane','Outside Line'],'Pixel Invaders':['Laser Shot','Pulse Blast','Shield Burst'],'Rocket Rescue':['Rescue Pod A','Rescue Pod B','Rescue Pod C'],'Jungle Jump':['Vine Swing','Stone Path','Canopy Leap'],'Turbo Kart':['Drift Boost','Turbo Strip','Safe Corner'],'Sky Glider':['Cloud Route','Wind Tunnel','Sky Bridge'],
+'Laser Maze':['Mirror A','Mirror B','Mirror C'],'Memory Match':['Sun Pair','Moon Pair','Star Pair'],'Color Sequence':['Red Pattern','Blue Pattern','Gold Pattern'],'Number Grid':['Grid 1','Grid 2','Grid 3'],'Shape Shift':['Triangle','Hexagon','Diamond'],'Word Sprint':['Quick Word','Long Word','Bonus Word'],'Pattern Path':['North Path','Center Path','South Path'],'Logic Lock':['Code A','Code B','Code C'],
+'Penalty Shootout':['Left Corner','Center Shot','Right Corner'],'Basketball Shot':['Bank Shot','Clean Swish','Long Range'],'Tennis Ace':['Cross Court','Down The Line','Drop Shot'],'Cricket Challenge':['Cover Drive','Straight Drive','Pull Shot'],'Bowling Strike':['Pocket One','Brooklyn Line','Backup Shot'],'Golf Putt':['Soft Putt','Power Putt','Curved Putt'],'Racing Rivals':['Red Racer','Blue Racer','Gold Racer'],'Darts Master':['Triple 20','Bullseye','Double 16'],
+'Diamond Reels':['Diamond','Blue Gem','Ruby'],'Golden Pharaoh':['Scarab','Ankh','Crown'],'Moonlight Gems':['Moonstone','Comet','Lunar Crown'],'Ocean Treasures':['Pearl','Trident','Seashell'],'Dragon Fortune':['Dragon','Fire Orb','Gold Hoard'],'Lucky Lanterns':['Red Lantern','Golden Lantern','Sky Lantern'],'Arctic Wilds':['Ice Wolf','Snowflake','Aurora'],'Starfall Spins':['Shooting Star','Nebula','Galaxy'],
+'Pai Gow Demo':['High Hand','Low Hand','Split Pair'],'Three Card Poker':['Pair Plus','Flush Draw','Straight Run'],'War Cards':['High Card','Middle Card','Ace Card'],'Red Dog':['Red Suit','Black Suit','Wild Draw'],'Sic Bo':['Small','Big','Triple'],'Crown & Anchor':['Crown','Anchor','Ship'],'Dragon Tiger':['Dragon','Tiger','Tie'],'Fan Tan':['One','Two','Three'],
+'Dice Duel':['Die One','Die Two','Die Three'],'Lucky Number':['Lucky 7','Lucky 13','Lucky 21'],'Target 21':['Target 18','Target 21','Target 24'],'Mystic Orb':['Blue Orb','Violet Orb','Emerald Orb'],'Quick Draw':['Quick Trigger','Steady Aim','Power Shot'],'Treasure Hunt':['Ancient Chest','Hidden Map','Golden Key'],'Bubble Pop':['Blue Cluster','Pink Cluster','Rainbow Cluster'],'Galaxy Blaster':['Photon Beam','Nova Burst','Star Cannon']
+};
+function gmChoiceSet(game){return GM_CHOICES[game?.n]||({space:['Portal One','Portal Two','Portal Three'],reflex:['Move One','Move Two','Move Three'],race:['Racer One','Racer Two','Racer Three'],arcade:['Power A','Power B','Power C'],puzzle:['Path A','Path B','Path C'],memory:['Pattern A','Pattern B','Pattern C'],sports:['Target Left','Target Center','Target Right'],reels:['Reel One','Reel Two','Reel Three'],table:['Seat One','Seat Two','Seat Three'],dice:['Die One','Die Two','Die Three'],number:['Number One','Number Two','Number Three']})[game?.mode]||['Option Alpha','Option Beta','Option Gamma'];}
+function gmBuildVisual(game){
+ const kind=game?.c||'originals', icon=game?.g||'✦', name=game?.n||gm.name;
+ const descriptors={slots:'SLOT FLOOR · SPIN THE REELS',table:'CASINO TABLE · PLACE YOUR PLAY',live:'CASINO SHOW · SPIN THE STAGE',originals:'VOLTA CASINO · PLAY THE ROUND'};
+ const visual=$gm('gm-visual');
+ visual.dataset.kind=kind;visual.dataset.game=name;
+ visual.style.setProperty('--art',game?.a||'linear-gradient(135deg,#171b3c,#49318c)');
+ const slotNames=['Neon Fruits','Gates of Olympus','Cyber Samurai','Wild Bonanza','Sweet Cascade','Diamond Reels','Golden Pharaoh','Moonlight Gems','Ocean Treasures','Dragon Fortune','Lucky Lanterns','Arctic Wilds','Starfall Spins'];
+ let art='';
+ if(slotNames.includes(name)){
+   const symbols=name==='Neon Fruits'?['🍒','🍋','7️⃣']:name==='Dragon Fortune'?['🐉','🪙','💎']:['✦','💎','7️⃣'];
+   art=`<div class="room-art slot-art"><div class="room-ring"></div>${symbols.map((x,i)=>`<div class="room-orb slot">${x}</div>`).join('')}</div>`;
+ }else if(name.includes('Roulette')){
+   art=`<div class="room-art roulette-art"><div class="room-ring"></div><div class="room-orb wheel">${icon}</div><div class="room-orb ball">●</div></div>`;
+ }else if(name==='Plinko'){
+   art=`<div class="room-art plinko-art"><div class="plinko-board">${Array.from({length:7},(_,r)=>`<div class="plinko-row">${Array.from({length:r+3},()=>'<i></i>').join('')}</div>`).join('')}<b class="plinko-ball">●</b><div class="plinko-bins">1×　2×　5×　2×　1×</div></div></div>`;
+ }else if(name==='Mines'||name==='Tower'){
+   art=`<div class="room-art tile-art"><div class="tile-preview">${Array.from({length:25},(_,i)=>`<i class="${[3,7,12,18].includes(i)?'hot':''}">${[3,7,12,18].includes(i)?'✦':'◆'}</i>`).join('')}</div></div>`;
+ }else if(['Blackjack VIP','Texas Hold’em','Three Card Poker','Video Poker','Caribbean Stud','Ultimate Texas Hold’em','Casino War','Dragon Tiger','Speed Baccarat','War Cards','Pai Gow Demo'].includes(name)){
+   art=`<div class="room-art card-art"><div class="room-ring"></div><div class="room-orb card">A♠</div><div class="room-orb card">K♥</div><div class="room-orb card">${icon}</div></div>`;
+ }else if(['Coin Flip','Fan Tan','Red Dog','Craps','Sic Bo','Dice','Dice Duel'].includes(name)){
+   art=`<div class="room-art chance-art"><div class="room-ring"></div><div class="room-orb coin">${icon}</div><div class="room-orb ball">✦</div></div>`;
+ }else if(['Crazy Time','Wheel of Fortune','Prize Wheel'].includes(name)){
+   art=`<div class="room-art wheel-art"><div class="room-ring"></div><div class="room-orb wheel">${icon}</div></div>`;
+ }else if(['Bingo','Keno','Keno Deluxe','Lucky Number','Scratch Cards'].includes(name)){
+   art=`<div class="room-art number-art"><div class="number-board">${Array.from({length:15},(_,i)=>`<i>${i+1}</i>`).join('')}</div></div>`;
+ }else if(name==='Limbo'||name==='Crash'||name==='Hi-Lo'||name==='Target 21'){
+   art=`<div class="room-art multiplier-art"><div class="room-ring"></div><div class="multiplier-display">${name==='Hi-Lo'?'♠ ♥':name==='Target 21'?'21.0':'2.00×'}</div></div>`;
+ }else{
+   art=`<div class="room-art"><div class="room-ring"></div><div class="room-orb">${icon}</div><div class="room-orb card">${name==='Crown & Anchor'?'♛':'✦'}</div></div>`;
+ }
+ visual.innerHTML=`<div class="gm-v-hud"><span class="gm-v-chip">${kind.toUpperCase()}</span><span class="gm-v-chip">DEMO CREDITS</span></div><div class="gm-v-copy"><div class="gm-v-kicker">${descriptors[kind]||descriptors.originals}</div><div class="gm-v-name">${escapeHtml(name)}</div><div class="gm-v-desc">Dedicated ${escapeHtml(name)} game room · Animated casino-style presentation · Demo credits only</div></div>${art}`;
+}
+function gmChoiceField(game,label='SELECT YOUR MOVE'){
+ const choices=gmChoiceSet(game);return `<div class="gm-field"><label>${label}</label><select id="gm-choice" class="gm-choice-select">${choices.map((x,i)=>`<option value="${i+1}">${escapeHtml(x)}</option>`).join('')}</select></div><div class="gm-choice-deck">${choices.map((x,i)=>`<button type="button" class="gm-choice-btn ${i===0?'selected':''}" data-gm-pick="${i+1}">${escapeHtml(x)}</button>`).join('')}</div>`;
+}
+function gmOpen(name){
+  gm.name=name;gm.round++;gm.active=false;gm.phase='idle';gm.picked=[];gm.cards=[];
+  $gm('gm-title').textContent=name;
+  const game=GAMES.find(g=>g.n===name);
+  $gm('gm-card')?.style.setProperty('--gm-accent',game?.gl||'#9b5cff');
+  gmBuildVisual(game);
+  $gm('gm-sub').textContent='DEMO MODE · Balance '+gmMoney(balance);
+  $gm('game-modal').classList.add('open');
+  gmRender();
+}
+function gmClose(){ if(gm.active){toast('Finish or lose the current demo round before closing',true);return;} $gm('game-modal').classList.remove('open'); }
+$gm('gm-close').onclick=gmClose;
+$gm('game-modal').addEventListener('click',e=>{if(e.target===$gm('game-modal'))gmClose();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$gm('game-modal').classList.contains('open'))gmClose();});
+function gmControls(html){$gm('gm-controls').innerHTML=html;}
+function gmActions(html){$gm('gm-actions').innerHTML=html;}
+function gmStage(result,caption,extra=''){$gm('gm-result').textContent=result;$gm('gm-caption').textContent=caption;const st=$gm('gm-stage');st.querySelectorAll('.gm-extra').forEach(x=>x.remove());if(extra){const d=document.createElement('div');d.className='gm-extra';d.innerHTML=extra;st.appendChild(d);}}
+function gmBetField(){return `<div class="gm-field"><label>DEMO STAKE</label><input id="gm-bet" type="number" min="1" step="1" value="${gm.bet}" /></div>`;}
+function gmReadBet(){const n=Number($gm('gm-bet')?.value);if(!Number.isFinite(n)||n<1||n>balance){toast(n>balance?'Not enough demo credits':'Enter a stake of at least 1 credit',true);return null;}gm.bet=Math.round(n*100)/100;return gm.bet;}
+function gmStake(){setBal(balance-gm.bet,gm.name+' demo stake','bet');gm.active=true;$gm('gm-sub').textContent='Stake '+gmMoney(gm.bet)+' · Balance '+gmMoney(balance);}
+function gmFinish(mult,label){const payout=Math.round(gm.bet*mult*100)/100;if(payout>0)setBal(balance+payout,gm.name+' demo return','win');gm.active=false;gm.phase='done';gmStage(label,payout>0?`Returned ${gmMoney(payout)} credits · Net ${payout>=gm.bet?'+':''}${gmMoney(payout-gm.bet)}`:'No return this round');$gm('gm-sub').textContent='Balance '+gmMoney(balance);gmActions('<button class="gm-btn" id="gm-again">Play another round</button>');$gm('gm-again').onclick=()=>gmRender();}
+function gmRender(){
+  gm.active=false;gm.phase='idle';gm.picked=[];
+  $gm('gm-sub').textContent='Demo credits · Balance '+gmMoney(balance);
+  const help={Crash:'Watch the multiplier rise and set an auto cash-out point before the demo crash.',Dice:'Choose over or under 50 and roll a virtual number.', 'Dice Duel':'Choose over or under 50 and roll a virtual number.', 'Lucky Number':'Pick a number from 1 to 20 and reveal the draw.',Plinko:'Drop a ball through the pegs. Risk level changes the pocket multipliers.',Mines:'Reveal safe tiles and cash out before you hit a mine.',Limbo:'Set a target multiplier. The round wins if the random result reaches your target.', 'Neon Fruits':'Match symbols across three reels. Three of a kind pays the most.', 'Gates of Olympus':'A fantasy-themed reel game. Match symbols to earn a demo return.', 'Cyber Samurai':'Spin the cyber reels and look for matching symbols.', 'Wild Bonanza':'A jungle-themed slot simulation with matching-symbol payouts.', 'Sweet Cascade':'A candy-themed reel game with matching-symbol payouts.', 'Lightning Roulette':'Choose a colour, parity, or exact number before the wheel spins.', 'Euro Roulette':'Choose a colour, parity, or exact number on a single-zero wheel.', 'Crazy Time':'Pick a segment, then spin the colourful bonus wheel.', 'Speed Baccarat':'Choose Player, Banker, or Tie before the cards are dealt.', 'Blackjack VIP':'Try to beat the dealer without going over 21. This is a simplified demo hand.', 'Texas Hold’em':'Compare your demo hand with the opponent using shared community cards.', 'Coin Flip':'Pick heads or tails, then flip a virtual coin.', 'Hi-Lo':'Guess whether the next card value will be higher or lower.', 'Keno':'Choose five numbers and see how many appear in the draw.', 'Tower':'Choose a safe lane on each floor. One wrong choice ends the climb.', 'Prize Wheel':'Pick a prize segment and spin the demo wheel.', 'Bingo':'Choose five numbers and watch the draw reveal matching balls.'};
+  gmStage('Ready to play?', 'Choose your demo stake and start a round.', `<div class="gm-help gm-extra">${help[gm.name]||'A VOLTA original game. Play a round using demo credits only.'}</div>`);
+  gmControls(gmBetField());
+  let action='Play round';
+  const n=gm.name;
+  if(n==='Mines'){gmControls(gmBetField()+`<div class="gm-field"><label>NUMBER OF MINES</label><select id="gm-mines"><option>3</option><option>5</option><option>7</option><option>10</option></select></div>`);action='Start mines';}
+  else if(n==='Limbo'){gmControls(gmBetField()+`<div class="gm-field"><label>TARGET MULTIPLIER</label><input id="gm-target" type="number" min="1.1" max="50" step="0.1" value="2.00"></div>`);action='Run limbo';}
+  else if(n==='Crash'){gmControls(gmBetField()+`<div class="gm-field"><label>AUTO CASH OUT</label><input id="gm-target" type="number" min="1.10" max="10" step="0.05" value="2.00"></div>`);action='Launch';}
+  else if(n==='Dice'||n==='Dice Duel'){gmControls(gmBetField()+`<div class="gm-field"><label>ROLL CONDITION</label><select id="gm-choice"><option value="over">Roll over 50</option><option value="under">Roll under 50</option></select></div>`);action='Roll dice';}
+  else if(n==='Lucky Number'){gmControls(gmBetField()+`<div class="gm-field"><label>YOUR NUMBER (1–20)</label><input id="gm-number" type="number" min="1" max="20" value="7"></div>`);action='Draw number';}
+  else if(['Neon Fruits','Gates of Olympus','Cyber Samurai','Wild Bonanza','Sweet Cascade'].includes(n)){action='Spin reels';}
+  else if(n==='Blackjack VIP'){action='Deal cards';}
+  else if(n==='Texas Hold’em'){action='Deal hand';}
+  else if(n==='Lightning Roulette'||n==='Euro Roulette'){gmControls(gmBetField()+`<div class="gm-field"><label>BET TYPE</label><select id="gm-choice"><option value="red">Red</option><option value="black">Black</option><option value="odd">Odd</option><option value="even">Even</option><option value="number">Single number (0–36)</option></select></div><div class="gm-field"><label>NUMBER (if single number)</label><input id="gm-number" type="number" min="0" max="36" value="7"></div>`);action='Spin roulette';}
+  else if(n==='Crazy Time'){gmControls(gmBetField()+`<div class="gm-field"><label>CHOOSE SEGMENT</label><select id="gm-choice"><option>1</option><option>2</option><option>5</option><option>10</option><option>Coin Flip</option><option>Cash Hunt</option></select></div>`);action='Spin wheel';}
+  else if(n==='Speed Baccarat'){gmControls(gmBetField()+`<div class="gm-field"><label>BET ON</label><select id="gm-choice"><option>Player</option><option>Banker</option><option>Tie</option></select></div>`);action='Deal baccarat';}
+  else if(n==='Plinko'){gmControls(gmBetField()+`<div class="gm-field"><label>RISK</label><select id="gm-risk"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></div>`);action='Drop ball';}
+  else if(n==='Dragon Tiger'){gmControls(gmBetField()+`<div class="gm-field"><label>BET ON</label><select id="gm-choice"><option>Dragon</option><option>Tiger</option><option>Tie</option></select></div>`);action='Deal cards';}
+  else if(n==='Sic Bo'){gmControls(gmBetField()+`<div class="gm-field"><label>BET TYPE</label><select id="gm-choice"><option>Small</option><option>Big</option><option>Triple</option></select></div>`);action='Roll dice';}
+  else if(n==='Craps'){gmControls(gmBetField()+`<div class="gm-field"><label>PASS LINE BET</label><select id="gm-choice"><option>Pass</option><option>Don't Pass</option></select></div>`);action='Roll the dice';}
+  else if(n==='Casino War'){gmControls(gmBetField()+`<div class="gm-field"><label>YOUR ACTION</label><select id="gm-choice"><option>War</option><option>Stand</option></select></div>`);action='Draw cards';}
+  else if(n==='Three Card Poker'||n==='Caribbean Stud'||n==='Ultimate Texas Hold’em'){gmControls(gmBetField()+`<div class="gm-field"><label>PLAY</label><select id="gm-choice"><option>Play</option><option>Fold</option></select></div>`);action='Deal hand';}
+  else if(n==='Video Poker'){action='Deal five cards';}
+  else if(n==='Bingo'||n==='Keno Deluxe'){gmControls(gmBetField()+`<div class="gm-field"><label>YOUR NUMBERS (5 numbers from 1–20)</label><input id="gm-keno" value="2,5,8,13,19"></div>`);action='Draw numbers';}
+  else if(n==='Scratch Cards'){action='Scratch card';}
+  else if(n==='Fan Tan'){gmControls(gmBetField()+`<div class="gm-field"><label>GUESS THE REMAINDER</label><select id="gm-choice"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>`);action='Reveal result';}
+  else if(n==='Red Dog'){gmControls(gmBetField()+`<div class="gm-field"><label>BET</label><select id="gm-choice"><option>Spread</option><option>No Spread</option></select></div>`);action='Deal cards';}
+  else if(n==='French Roulette'||n==='American Roulette'){gmControls(gmBetField()+`<div class="gm-field"><label>BET TYPE</label><select id="gm-choice"><option value="red">Red</option><option value="black">Black</option><option value="odd">Odd</option><option value="even">Even</option><option value="number">Single number</option></select></div><div class="gm-field"><label>NUMBER</label><input id="gm-number" type="number" min="0" max="36" value="7"></div>`);action='Spin wheel';}
+  else if(n==='Coin Flip'){gmControls(gmBetField()+`<div class="gm-field"><label>CHOOSE SIDE</label><select id="gm-choice"><option>Heads</option><option>Tails</option></select></div>`);action='Flip coin';}
+  else if(n==='Hi-Lo'){gmControls(gmBetField()+`<div class="gm-field"><label>GUESS NEXT CARD</label><select id="gm-choice"><option value="higher">Higher</option><option value="lower">Lower</option></select></div>`);action='Draw card';}
+  else if(n==='Keno'){gmControls(gmBetField()+`<div class="gm-field"><label>YOUR FIVE NUMBERS (1–20, comma separated)</label><input id="gm-keno" value="2,5,8,13,19" maxlength="30"></div>`);action='Draw Keno';}
+  else if(n==='Tower'){gmControls(gmBetField()+`<div class="gm-field"><label>YOUR FIVE-LANE PATH (1, 2 OR 3)</label><input id="gm-path" value="1,2,3,1,2" maxlength="9"></div>`);action='Climb tower';}
+  else if(n==='Prize Wheel'){gmControls(gmBetField()+`<div class="gm-field"><label>CHOOSE PRIZE</label><select id="gm-choice"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option><option value="5">5×</option><option value="10">10×</option></select></div>`);action='Spin wheel';}
+  else if(n==='Rock Paper Scissors'){gmControls(gmBetField()+`<div class="gm-field"><label>YOUR MOVE</label><select id="gm-choice"><option>Rock</option><option>Paper</option><option>Scissors</option></select></div>`);action='Play match';}
+  else if(GAMES.find(g=>g.n===n)?.mode){const game=GAMES.find(g=>g.n===n);const pickLabel=game.c==='sports'?'CHOOSE YOUR SHOT':game.c==='puzzle'?'CHOOSE YOUR SOLUTION':game.c==='arcade'?'CHOOSE YOUR ROUTE':game.c==='slots'?'CHOOSE YOUR REEL SYMBOL':game.c==='table'?'CHOOSE YOUR PLAY':'CHOOSE YOUR MOVE';gmControls(gmBetField()+gmChoiceField(game,pickLabel));action=game.c==='sports'?'Start match':game.c==='puzzle'?'Solve puzzle':game.c==='arcade'?'Start level':game.c==='slots'?'Spin game':'Play round';}
+  $gm('gm-controls').querySelectorAll('[data-gm-pick]').forEach(b=>b.onclick=()=>{$gm('gm-controls').querySelector('#gm-choice').value=b.dataset.gmPick;$gm('gm-controls').querySelectorAll('[data-gm-pick]').forEach(x=>x.classList.toggle('selected',x===b));});
+  gmActions(`<button class="gm-btn" id="gm-play">${action}</button><button class="gm-btn alt" id="gm-cancel">Back to lobby</button>`);
+  $gm('gm-play').onclick=gmStart;$gm('gm-cancel').onclick=gmClose;
+}
+function gmStart(){
+ const bet=gmReadBet();if(bet===null)return;
+ const n=gm.name;
+ if(['Keno','Bingo','Keno Deluxe'].includes(n)){const a=($gm('gm-keno').value||'').split(',').map(x=>Number(x.trim()));if(a.length!==5||new Set(a).size!==5||a.some(x=>!Number.isInteger(x)||x<1||x>20)){toast('Enter exactly five unique numbers from 1 to 20',true);return;}}
+ if(n==='Tower'){const a=($gm('gm-path').value||'').split(',').map(x=>Number(x.trim()));if(a.length!==5||a.some(x=>![1,2,3].includes(x))){toast('Enter five lanes using only 1, 2, or 3',true);return;}}
+ gmStake();
+ if(n==='Mines')return gmMinesStart();
+ if(n==='Dragon Tiger')return gmDragonTiger();
+ if(n==='Sic Bo')return gmSicBo();
+ if(n==='Craps')return gmCraps();
+ if(n==='Casino War')return gmCasinoWar();
+ if(['Three Card Poker','Caribbean Stud','Ultimate Texas Hold’em'].includes(n))return gmThreeCard();
+ if(n==='Video Poker')return gmVideoPoker();
+ if(['Bingo','Keno Deluxe'].includes(n))return gmKeno();
+ if(n==='Scratch Cards')return gmScratch();
+ if(n==='Fan Tan')return gmFanTan();
+ if(n==='Red Dog')return gmRedDog();
+ if(['French Roulette','American Roulette'].includes(n))return gmRoulette();
+ if(n==='Crash')return gmCrash();
+ if(n==='Dice'||n==='Dice Duel')return gmDice();
+ if(n==='Lucky Number')return gmLuckyNumber();
+ if(n==='Plinko')return gmPlinko();
+ if(n==='Limbo')return gmLimbo();
+ if(GAMES.find(g=>g.n===n)?.c==='slots')return gmSlots();
+ if(n==='Lightning Roulette'||n==='Euro Roulette')return gmRoulette();
+ if(n==='Crazy Time')return gmCrazy();
+ if(n==='Speed Baccarat')return gmBaccarat();
+ if(n==='Blackjack VIP')return gmBlackjack();
+ if(n==='Texas Hold’em')return gmHoldem();
+ if(n==='Coin Flip')return gmCoinFlip();
+ if(n==='Hi-Lo')return gmHiLo();
+ if(n==='Keno')return gmKeno();
+ if(n==='Tower')return gmTower();
+ if(n==='Prize Wheel')return gmPrizeWheel();
+ if(n==='Rock Paper Scissors')return gmRPS();
+ if(GAMES.find(g=>g.n===n)?.mode)return gmQuickChallenge();
+ gmFinish(0,'Round complete');
+}
+
+function gmQuickChallenge(){
+ const game=GAMES.find(g=>g.n===gm.name),choices=gmChoiceSet(game);
+ const pick=Number($gm('gm-choice')?.value||1),result=1+Math.floor(Math.random()*choices.length);
+ const win=pick===result;let mult=win?2.7:0;
+ if(game?.c==='sports')mult=win?2.2:0;
+ if(game?.c==='puzzle')mult=win?3:0;
+ if(game?.c==='slots')mult=win?2.8:0;
+ if(game?.c==='table')mult=win?2.4:0;
+ if(game?.c==='arcade')mult=win?2.6:0;
+ const selected=choices[pick-1]||'Your selection',outcome=choices[result-1]||'Result';
+ const headline=win?['LEVEL CLEARED!','PERFECT PLAY!','MISSION COMPLETE!'][Math.floor(Math.random()*3)]:['TRY AGAIN','ROUND OVER','KEEP PRACTISING'][Math.floor(Math.random()*3)];
+ const art=game?.c==='sports'?`<div class="gm-reels"><div class="gm-reel">${game.g}</div><div class="gm-reel">🎯</div><div class="gm-reel">🏆</div></div>`:game?.c==='puzzle'?`<div class="gm-grid">${Array.from({length:9},(_,i)=>`<div class="gm-tile ${i===result+1?'safe':''}">${['◆','◇','✦','◈'][i%4]}</div>`).join('')}</div>`:game?.c==='arcade'?`<div class="gm-reels"><div class="gm-reel">${game.g}</div><div class="gm-reel">⚡</div><div class="gm-reel">🚀</div></div>`:game?.c==='slots'?`<div class="gm-reels"><div class="gm-reel">${game.g}</div><div class="gm-reel">${win?game.g:'✦'}</div><div class="gm-reel">${win?game.g:'💎'}</div></div>`:`<div class="gm-reels"><div class="gm-reel">${game?.g||'✦'}</div><div class="gm-reel">${win?'✓':'?'}</div></div>`;
+ gmStage(headline,`You chose ${selected} · Game result: ${outcome} · ${win?'You cleared this round':'The result was different'}`,art);
+ gmFinish(mult,win?gm.name+' · Challenge cleared':gm.name+' · Challenge missed');
+}
+
+
+function gmDice(){const roll=Math.floor(Math.random()*100)+1,choice=$gm('gm-choice').value,win=choice==='over'?roll>50:roll<50,m=win?1.9:0;gmStage('ROLL '+roll,`Your pick: ${choice==='over'?'over':'under'} 50 · ${win?'You hit the condition':'The roll missed'}`,`<div class="gm-dice">🎲 <span class="gm-number-ball">${roll}</span></div>`);gmFinish(m,win?'Dice win':'Dice loss');}
+function gmCrash(){const target=Math.max(1.1,Math.min(10,Number($gm('gm-target').value)||2)),crash=1+Math.random()*8,win=target<=crash,m=win?target*.97:0;gmStage('1.00×','Multiplier rising…',`<div class="gm-result" id="crash-mult" style="font-size:54px;color:#55f0a3">1.00×</div><div style="height:9px;background:#25283b;border-radius:9px;overflow:hidden;margin:15px auto;max-width:360px"><i id="crash-bar" style="display:block;height:100%;width:4%;background:linear-gradient(90deg,#43d98a,#b9ff76);transition:width .1s"></i></div>`);gmActions('');let value=1,step=0;const timer=setInterval(()=>{step++;value=1+step*.12;const label=$gm('crash-mult'),bar=$gm('crash-bar');if(label)label.textContent=Math.min(value,win?target:crash).toFixed(2)+'×';if(bar)bar.style.width=Math.min(100,step*4)+'%';if(value>= (win?target:crash)||step>80){clearInterval(timer);if(win){gmStage('CASHED OUT · '+target.toFixed(2)+'×',`Demo auto cash-out reached before the crash point (${crash.toFixed(2)}×)`);gmFinish(m,'Crash demo cash-out');}else{gmStage('CRASHED · '+crash.toFixed(2)+'×','The multiplier crashed before your auto cash-out.');gmFinish(0,'Crash demo round lost');}}},85);}
+function gmLuckyNumber(){const pick=Math.max(1,Math.min(20,Number($gm('gm-number').value)||1)),draw=1+Math.floor(Math.random()*20),win=pick===draw;gmStage('NUMBER '+draw,`Your number ${pick} · ${win?'Exact match':'No match'}`,`<div class="gm-number-ball">${draw}</div>`);gmFinish(win?18:0,win?'Lucky number jackpot':'Lucky number missed');}
+function gmDragonTiger(){const d=gmCard(),t=gmCard(),winner=d.rank===t.rank?'Tie':d.rank>t.rank?'Dragon':'Tiger',pick=$gm('gm-choice').value,m=pick===winner?(winner==='Tie'?8:1.95):0;gmStage(winner,`Dragon ${d.label} · Tiger ${t.label} · Your pick: ${pick}`,gmShowCards([d,t]));gmFinish(m,m?'Dragon Tiger win':'Dragon Tiger loss');}
+function gmSicBo(){const dice=[1,2,3].map(()=>1+Math.floor(Math.random()*6)),sum=dice.reduce((a,b)=>a+b,0),triple=dice.every(x=>x===dice[0]),pick=$gm('gm-choice').value,win=pick==='Triple'?triple:pick==='Small'?sum>=4&&sum<=10&&!triple:sum>=11&&sum<=17&&!triple,m=win?(triple?30:1.9):0;gmStage('Total '+sum,`Dice: ${dice.join(' · ')} · ${triple?'Triple':sum<=10?'Small':'Big'}`,`<div class="gm-dice">${dice.map(x=>['','⚀','⚁','⚂','⚃','⚄','⚅'][x]).join(' ')}</div>`);gmFinish(m,m?'Sic Bo win':'Sic Bo loss');}
+function gmCraps(){const a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6),sum=a+b,pick=$gm('gm-choice').value,pass=sum===7||sum===11,lose=sum===2||sum===3||sum===12,win=pick==='Pass'?pass:lose,m=win?1.95:0;gmStage('Roll '+sum,`Dice ${a} + ${b} · ${pass?'Pass line wins':lose?'Pass line loses':'Point established — simplified demo round'}`,`<div class="gm-dice">${['⚀','⚁','⚂','⚃','⚄','⚅'][a-1]} ${['⚀','⚁','⚂','⚃','⚄','⚅'][b-1]}</div>`);gmFinish(m,m?'Craps demo win':'Craps demo loss');}
+function gmCasinoWar(){const a=gmCard(),b=gmCard(),win=a.rank>b.rank,m=a.rank===b.rank?($gm('gm-choice').value==='War'?3.8:1):win?1.95:0;gmStage(a.rank===b.rank?'WAR!':win?'PLAYER WINS':'DEALER WINS',`Your card ${a.label} · Dealer ${b.label}`,gmShowCards([a,b]));gmFinish(m,m?'Casino War win':'Casino War loss');}
+function gmThreeCard(){const pick=$gm('gm-choice').value;if(pick==='Fold'){gmStage('Folded','You folded before the comparison.');return gmFinish(0,'Hand folded');}const player=[gmCard(),gmCard(),gmCard()],dealer=[gmCard(),gmCard(),gmCard()],p=player.reduce((a,c)=>a+c.rank,0),d=dealer.reduce((a,c)=>a+c.rank,0),win=p>d,m=win?1.9:p===d?1:0;gmStage(win?'PLAYER HAND WINS':p===d?'PUSH':'DEALER HAND WINS',`Player total ${p} · Dealer total ${d} · Simplified demo comparison`,gmShowCards(player)+gmShowCards(dealer));gmFinish(m,'Three-card table hand settled');}
+function gmVideoPoker(){const hand=Array.from({length:5},()=>gmCard()),counts={};hand.forEach(c=>counts[c.rank]=(counts[c.rank]||0)+1);const groups=Object.values(counts).sort((a,b)=>b-a),pairs=groups[0]===2?1:0,three=groups[0]===3,four=groups[0]===4,flush=hand.every(c=>c.suit===hand[0].suit),ranks=hand.map(c=>c.rank).sort((a,b)=>a-b),straight=ranks.every((v,i)=>i===0||v===ranks[i-1]+1),mult=four?25:three&&pairs?8:flush&&straight?20:flush?6:straight?5:three?3:pairs?1.5:0;gmStage(mult?'WINNING HAND':'NO PAYING HAND',`Video Poker · ${mult?mult+'× return':'No winning combination'}`,gmShowCards(hand));gmFinish(mult,'Video Poker hand complete');}
+function gmScratch(){const symbols=['💎','7️⃣','🍀','⭐','🔔','👑'],cards=Array.from({length:9},()=>symbols[Math.floor(Math.random()*symbols.length)]),counts={};cards.forEach(x=>counts[x]=(counts[x]||0)+1);const best=Math.max(...Object.values(counts)),mult=best>=5?8:best===4?3:best===3?1.5:0;gmStage('CARD REVEALED',best+' matching symbols',`<div class="gm-grid" style="grid-template-columns:repeat(3,1fr)">${cards.map(x=>`<div class="gm-tile safe">${x}</div>`).join('')}</div>`);gmFinish(mult,mult?'Scratch card win':'No match');}
+function gmFanTan(){const pile=1+Math.floor(Math.random()*40),rem=pile%4||4,pick=Number($gm('gm-choice').value),win=pick===rem;gmStage('Remainder '+rem,`A pile of ${pile} counters leaves remainder ${rem} when grouped by four`);gmFinish(win?3.7:0,win?'Fan Tan win':'Fan Tan loss');}
+function gmRedDog(){const a=gmCard(),b=gmCard(),gap=Math.abs(a.rank-b.rank)-1,choice=$gm('gm-choice').value,win=gap>0?choice==='Spread':choice==='No Spread',m=win?(gap>=4?4:gap>=2?2.5:1.9):0;gmStage(gap>0?'SPREAD '+gap:'NO SPREAD',`Cards ${a.label} and ${b.label} · ${gap} ranks between`,gmShowCards([a,b]));gmFinish(m,win?'Red Dog win':'Red Dog loss');}
+function gmCoinFlip(){const pick=$gm('gm-choice').value;const result=Math.random()<.5?'Heads':'Tails';const win=pick===result;gmStage('Coin in the air','The coin is flipping…',`<div class="coin-3d flipping" id="coin-art">V</div>`);gmActions('');setTimeout(()=>{const coin=$gm('coin-art');if(coin){coin.classList.remove('flipping');coin.textContent=result==='Heads'?'V':'★';coin.style.transform=result==='Heads'?'rotateY(0deg)':'rotateY(180deg)';}gmStage(result,`You picked ${pick} · ${win?'Correct side':'Not this time'}`,`<div class="coin-3d">${result==='Heads'?'V':'★'}</div>`);gmFinish(win?1.95:0,win?'Coin flip won':'Coin flip lost');},1380);} 
+function gmHiLo(){const first=1+Math.floor(Math.random()*13),next=1+Math.floor(Math.random()*13),choice=$gm('gm-choice').value;const win=choice==='higher'?next>first:next<first;const tie=next===first;gmStage(first+'  →  '+next,`You chose ${choice} · ${tie?'Tie':win?'Correct guess':'Wrong guess'}`);gmFinish(tie?1:win?1.9:0,tie?'Hi-Lo push':win?'Hi-Lo won':'Hi-Lo lost');}
+function gmKeno(){const raw=($gm('gm-keno').value||'').split(',').map(x=>Number(x.trim()));const picks=[...new Set(raw)];if(picks.length!==5||picks.some(x=>!Number.isInteger(x)||x<1||x>20)){gm.active=false;toast('Enter exactly five unique numbers from 1 to 20',true);return;}const draw=[];while(draw.length<5){const n=1+Math.floor(Math.random()*20);if(!draw.includes(n))draw.push(n);}const hits=picks.filter(x=>draw.includes(x)).length;const mult=[0,0,0,1.5,5,15][hits];gmStage(`${hits} / 5 hits`,`Your numbers: ${picks.join(', ')} · Draw: ${draw.join(', ')}`);gmFinish(mult,mult?'Keno payout · '+mult+'×':'No Keno match');}
+function gmTower(){const path=($gm('gm-path').value||'').split(',').map(x=>Number(x.trim()));if(path.length!==5||path.some(x=>![1,2,3].includes(x))){gm.active=false;toast('Enter five lanes using only 1, 2, or 3',true);return;}const traps=Array.from({length:5},()=>1+Math.floor(Math.random()*3));let safe=0;for(let i=0;i<5;i++){if(path[i]===traps[i])break;safe++;}const mult=safe===5?9:0;gmStage(`${safe} / 5 floors cleared`,`Your path: ${path.join(' · ')} · Tower traps: ${traps.join(' · ')}`);gmFinish(mult,mult?'Tower climb · '+mult+'×':'Tower trap hit');}
+function gmPrizeWheel(){const segments=[1,2,3,5,10];const result=segments[Math.floor(Math.random()*segments.length)];const pick=Number($gm('gm-choice').value);const win=result===pick;gmStage(result+'×',`You selected ${pick}× · Wheel landed on ${result}×`);gmFinish(win?pick:0,win?'Prize wheel matched':'Prize wheel missed');}
+function gmRPS(){const moves=['Rock','Paper','Scissors'];const you=$gm('gm-choice').value,opponent=moves[Math.floor(Math.random()*3)];const draw=you===opponent;const win=!draw&&((you==='Rock'&&opponent==='Scissors')||(you==='Paper'&&opponent==='Rock')||(you==='Scissors'&&opponent==='Paper'));gmStage(`${you}  vs  ${opponent}`,draw?'It is a draw':win?'You win the match':'Computer wins');gmFinish(draw?1:win?1.9:0,draw?'Match tied':win?'Match won':'Match lost');}
+function gmPlinko(){const risk=$gm('gm-risk').value;const rows=Array.from({length:9},()=>Math.random()<.5?0:1);const slot=rows.reduce((a,b)=>a+b,0);const tables={low:[5,2,1.4,1.2,1,1,1.2,1.4,2,5],medium:[12,4,2,1.4,.5,.5,1.4,2,4,12],high:[30,8,3,1,.2,.2,1,3,8,30]};const m=tables[risk][slot];const pegRows=Array.from({length:8},(_,r)=>`<div class="plinko-row">${Array.from({length:r+3},()=>'<i class="plinko-peg"></i>').join('')}</div>`).join('');gmStage('BALL DROPPING','Follow the ball through the pegs to the multiplier pocket',`<div class="plinko-board"><div class="plinko-pegs">${pegRows}</div><i class="plinko-ball dropping" style="--landing:${10+slot*8.8}%"></i></div>`);gmActions('');setTimeout(()=>{gmStage('▼ '+m.toFixed(2)+'×',`Ball landed in pocket ${slot+1} of 10 · ${risk} risk`);gmFinish(m,'Plinko · '+m.toFixed(2)+'×');},1350);} 
+function gmLimbo(){const target=Math.max(1.1,Math.min(50,Number($gm('gm-target').value)||2));const roll=1+Math.random()*25;const win=roll>=target;gmStage(roll.toFixed(2)+'×',`Target ${target.toFixed(2)}× · ${win?'Target reached':'Target missed'}`);gmFinish(win?target*.99:0,win?'Limbo hit!':'Limbo missed');}
+function gmSlots(){const n=gm.name;const symbols=n==='Gates of Olympus'?['Ω','⚡','🔱','💎','👑']:n==='Cyber Samurai'?['刀','⛩️','🐉','⚔️','💠']:n==='Wild Bonanza'?['🐯','🌿','🍀','💰','🪙']:n==='Sweet Cascade'?['🍭','🍬','🍓','🧁','🍒']:['🍒','🍋','🍇','🔔','7️⃣'];const reels=Array.from({length:3},()=>symbols[Math.floor(Math.random()*symbols.length)]);gmStage('SPINNING…','Watch the reels stop one by one',`<div class="gm-reels">${reels.map((x,i)=>`<div class="gm-reel spinning" id="slot-reel-${i}">${symbols[Math.floor(Math.random()*symbols.length)]}</div>`).join('')}</div>`);gmActions('');[650,1050,1450].forEach((delay,i)=>setTimeout(()=>{const el=$gm('slot-reel-'+i);if(el){el.classList.remove('spinning');el.textContent=reels[i];}if(i===2){const same=reels.every(x=>x===reels[0]);const pair=new Set(reels).size===2;const mult=same?(reels[0]==='7️⃣'||reels[0]==='👑'?12:6):pair?1.5:0;gmStage(reels.join('  '),same?'Three of a kind!':pair?'Two matching symbols':'No match',`<div class="gm-reels">${reels.map(x=>`<div class="gm-reel">${x}</div>`).join('')}</div>`);gmFinish(mult,mult?'Winning spin':'No win this spin');}},delay));}
+function gmMinesStart(){const count=Number($gm('gm-mines').value);gm.mines=[];while(gm.mines.length<count){const x=Math.floor(Math.random()*25);if(!gm.mines.includes(x))gm.mines.push(x);}gm.picked=[];gm.phase='mines';gmControls('');gmStage('Pick a tile','Avoid the hidden mines. Cash out after any safe pick.');gmActions(`<button class="gm-btn" id="gm-cash" disabled>Cash out</button><button class="gm-btn alt" id="gm-stop">End round</button>`);$gm('gm-cash').onclick=()=>{const safe=gm.picked.length;const mult=Math.pow(25/(25-count),safe)*.96;gmFinish(mult,'Mines · Cashed out after '+safe+' safe picks');};$gm('gm-stop').onclick=()=>gmFinish(0,'Round ended');const board=document.createElement('div');board.className='gm-grid gm-extra';board.innerHTML=Array.from({length:25},(_,i)=>`<button class="gm-tile" data-tile="${i}">?</button>`).join('');$gm('gm-stage').appendChild(board);board.addEventListener('click',e=>{const b=e.target.closest('[data-tile]');if(!b||!gm.active||b.disabled)return;const i=Number(b.dataset.tile);b.disabled=true;gm.picked.push(i);if(gm.mines.includes(i)){b.textContent='✹';b.classList.add('mine');board.querySelectorAll('.gm-tile').forEach((x,j)=>{if(gm.mines.includes(j)){x.textContent='✹';x.classList.add('mine');}x.disabled=true;});$gm('gm-cash').disabled=true;gmFinish(0,'Mine hit — round lost');}else{b.textContent='◆';b.classList.add('safe');const safe=gm.picked.length;const mult=Math.pow(25/(25-count),safe)*.96;$gm('gm-cash').disabled=false;$gm('gm-cash').textContent='Cash out · '+mult.toFixed(2)+'×';$gm('gm-caption').textContent=safe+' safe picks · Cash-out '+mult.toFixed(2)+'×';if(safe===25-count){gmFinish(mult,'All safe tiles found!');}}});}
+function gmRoulette(){const choice=$gm('gm-choice').value;const num=Number($gm('gm-number').value)||0;const isAmerican=gm.name==='American Roulette';const r=Math.floor(Math.random()*(isAmerican?38:37));const shown=r===37?'00':String(r);const reds=[1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];const color=(r===0||r===37)?'green':reds.includes(r)?'red':'black';let m=0;if(choice==='number'&&r===num)m=35;else if(choice==='red'&&color==='red'||choice==='black'&&color==='black'||choice==='odd'&&r>0&&r%2===1||choice==='even'&&r>0&&r%2===0)m=1;gmStage(shown,`Ball landed on ${color} · Your pick: ${choice}`);gmFinish(m,m?'Roulette win':'Roulette loss');}
+function gmCrazy(){const opts=['1','2','5','10','Coin Flip','Cash Hunt'];const result=opts[Math.floor(Math.random()*opts.length)];const choice=$gm('gm-choice').value;const m=result===choice?(result==='Cash Hunt'?5:result==='Coin Flip'?2:Number(result)):0;gmStage(result,`Your segment: ${choice} · Wheel result: ${result}`);gmFinish(m,m?'Wheel hit!':'No match');}
+function gmBaccarat(){const p=Math.floor(Math.random()*10),b=Math.floor(Math.random()*10);const win=p===b?'Tie':p>b?'Player':'Banker';const choice=$gm('gm-choice').value;const m=choice===win?(win==='Tie'?8:win==='Banker'?1.95:2):0;gmStage('P '+p+'  ·  B '+b,`Result: ${win} · Your pick: ${choice}`);gmFinish(m,m?'Baccarat win':'Baccarat loss');}
+function gmCard(){const ranks=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];const suits=['♠','♥','♦','♣'];const rank=Math.floor(Math.random()*13);const suit=suits[Math.floor(Math.random()*4)];return {rank,suit,label:ranks[rank]+suit};}
+function gmShowCards(cards){return `<div class="gm-cards">${cards.map(c=>`<div class="gm-playing-card ${c.suit==='♥'||c.suit==='♦'?'red':''}">${c.label}</div>`).join('')}</div>`;}
+function bjScore(cards){let total=0,aces=0;for(const c of cards){if(c.rank===12){total+=11;aces++;}else total+=Math.min(c.rank+2,10);}while(total>21&&aces){total-=10;aces--;}return total;}
+function gmBlackjack(){
+ const player=[gmCard(),gmCard()],dealer=[gmCard(),gmCard()];gm.cards={player,dealer};
+ const ps=bjScore(player);
+ if(ps===21){const ds=bjScore(dealer);gmStage('Blackjack!','Natural 21 · Dealer has '+ds,gmShowCards(player)+'<div class="gm-caption">Dealer: '+dealer.map(c=>c.label).join(' ')+'</div>');return gmFinish(ds===21?1:2.4,'Blackjack hand settled');}
+ gmStage('Your turn · '+ps,'Hit to draw another card, or stand to let the dealer play.',gmShowCards(player)+'<div class="gm-caption">Dealer shows '+dealer[0].label+' · hidden card</div>');
+ gmActions('<button class="gm-btn" id="bj-hit">Hit</button><button class="gm-btn" id="bj-stand">Stand</button>');
+ const settle=()=>{let ds=bjScore(dealer);while(ds<17){dealer.push(gmCard());ds=bjScore(dealer);}const ps2=bjScore(player);const mult=ps2>21?0:ds>21||ps2>ds?1.95:ps2===ds?1:0;gmStage('You '+ps2+' · Dealer '+ds,ps2>21?'Bust — dealer wins':ds>21?'Dealer busts':ps2>ds?'You win':ps2===ds?'Push':'Dealer wins',gmShowCards(player)+'<div class="gm-caption">Dealer hand</div>'+gmShowCards(dealer));gmFinish(mult,'Blackjack hand complete');};
+ $gm('bj-hit').onclick=()=>{player.push(gmCard());const score=bjScore(player);if(score>=21){settle();}else{gmStage('Your total · '+score,'Hit again or stand.',gmShowCards(player)+'<div class="gm-caption">Dealer shows '+dealer[0].label+' · hidden card</div>');}};
+ $gm('bj-stand').onclick=settle;
+}
+function gmHoldem(){const player=[gmCard(),gmCard()],dealer=[gmCard(),gmCard()];const community=[gmCard(),gmCard(),gmCard(),gmCard(),gmCard()];const score=a=>a.reduce((s,c)=>s+c.rank,0);const ps=score(player.concat(community)),ds=score(dealer.concat(community));const m=ps>ds?1.9:ps===ds?1:0;gmStage(ps>ds?'You win':ps===ds?'Split pot':'Dealer wins',`Simplified demo hand comparison · Your hand ${ps} vs opponent ${ds}`,gmShowCards(player)+'<div class="gm-caption">Community cards</div>'+gmShowCards(community));gmFinish(m,m?'Hand won':'Hand lost');}
+$gm('grid').addEventListener('click',e=>{const card=e.target.closest('.card');if(!card)return;const name=card.querySelector('b')?.textContent;if(!name)return;if(name==='Dice'||name==='Crash'){const target=[...document.querySelectorAll('.game')].find(el=>el.querySelector('.game-h h3')?.textContent.trim().startsWith(name));target?.scrollIntoView({behavior:'smooth',block:'center'});return;}gmOpen(name);});
+
+
+function renderWallet(){
+  if(!$('#wallet-page')) return;
+  $('#wallet-balance').textContent=fmt(balance);
+  $('#w-added').textContent=fmt(walletStats.added||0);
+  $('#w-wagered').textContent=fmt(walletStats.wagered||0);
+  const net=walletStats.gameNet||0;
+  $('#w-net').textContent=(net>=0?'+':'−')+fmt(Math.abs(net));
+  $('#w-net').style.color=net>=0?'var(--green)':'var(--red)';
+  $('#w-count').textContent=transactions.length.toLocaleString();
+  $('#tx-count-label').textContent=transactions.length+' records';
+  const q=($('#tx-search')?.value||'').trim().toLowerCase();
+  const filter=$('#tx-filter')?.value||'all';
+  const rows=transactions.filter(t=>(filter==='all'||t.type===filter)&&(!q||(t.reason+' '+t.id+' '+t.type).toLowerCase().includes(q)));
+  $('#tx-body').innerHTML=rows.length?rows.map(t=>{
+    const positive=t.amount>=0;
+    const icon=t.type==='credit'?'＋':t.type==='bet'?'↗':t.type==='win'?'✦':'↩';
+    const date=new Date(t.time);
+    return `<tr><td><div class="tx-name"><span class="tx-icon">${icon}</span><div><b>${escapeHtml(t.reason)}</b><small>${escapeHtml(t.id)}</small></div></div></td><td>${date.toLocaleString()}</td><td class="tx-amount ${positive?'plus':'minus'}">${positive?'+':'−'}${fmt(Math.abs(t.amount))}</td><td>${fmt(t.balance)}</td><td><span class="tx-status">Recorded</span></td></tr>`;
+  }).join(''):'<tr><td colspan="5" class="tx-empty">No transactions match this filter yet.</td></tr>';
+  $('#tx-summary').textContent=`Showing ${rows.length} of ${transactions.length} transactions · Demo credits only`;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+$('#tx-search').addEventListener('input',renderWallet);
+$('#tx-filter').addEventListener('change',renderWallet);
+$('#tx-export').onclick=()=>{
+  const head=['ID','Date','Activity','Type','Amount','Balance after'];
+  const csv=[head,...transactions.map(t=>[t.id,t.time,t.reason,t.type,t.amount.toFixed(2),t.balance.toFixed(2)])]
+    .map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='volta-demo-transactions.csv';a.click();URL.revokeObjectURL(url);
+};
+renderWallet();renderBank();
+
+/* ===== live feed ===== */
+const NAMES = ['NeonWolf','vortex_88','LuckyKai','AceOfSpades','crypt0queen','BlazeRunner','mintcondition','Hyperion','ShadowFox','ZenGambler','lunar_tick','DrDegen','PixelPaul','Oracle42','RiskItAll','Nova','grindset','SilentBob','TurboTina','Kraken','EchoBay','Maverick','sunny_side','VoltRider','Quasar'];
+const FGAMES = ['Dice','Crash','Plinko','Mines','Limbo','Slots','Roulette'];
+const hue = s => { let h=0; for(const c of s) h=(h*31+c.charCodeAt(0))%360; return h; };
+const avatar = name => `<div class="av" style="background:linear-gradient(135deg,hsl(${hue(name)} 90% 62%),hsl(${(hue(name)+70)%360} 85% 55%))">${name[0].toUpperCase()}</div>`;
+let tab = 'live', bets = 0, paid = 0, bigWin = 92410;
+const feedEl = $('#list');
+
+function feedItem({user,game,bet,mult,me}){
+  const win = mult>0, profit = bet*mult - bet;
+  const li = document.createElement('li');
+  li.className = 'item' + (mult>=10?' big':'') + (me?' me':'');
+  li.innerHTML = `${avatar(user)}
+    <div class="who"><b>${user}</b><small>${game} · $${fmt(bet)}</small></div>
+    <div class="pay"><b class="${win?'pos':'neg'}">${win?'+$'+fmt(profit+bet):'−$'+fmt(bet)}</b><small>${win?mult.toFixed(2)+'×':'0.00×'}</small></div>`;
+  return li;
+}
+function pushFeed(o){
+  bets++; if(o.mult>0) paid += o.bet*o.mult;
+  if(o.bet*o.mult>bigWin){ bigWin = o.bet*o.mult; $('#s-big').textContent='$'+Math.round(bigWin).toLocaleString('en-US'); }
+  if(tab!=='live') return;
+  feedEl.prepend(feedItem(o));
+  while(feedEl.children.length>14) feedEl.lastChild.remove();
+}
+function botBet(){
+  const r = Math.random();
+  let mult = 0;
+  if(r>0.52){ mult = r>0.97 ? rand(15,80) : r>0.88 ? rand(4,14) : rand(1.1,3.8); }
+  const bet = pick([5,10,25,40,75,120,250,500,900,1500,3200]) * (Math.random()<.3?rand(.6,1.4):1);
+  pushFeed({user:pick(NAMES), game:pick(FGAMES), bet:Math.round(bet*100)/100, mult:Math.round(mult*100)/100});
+}
+for(let i=0;i<12;i++) botBet();
+(function loop(){ if(tab==='live') botBet(); else bets++; setTimeout(loop, rand(650,1500)); })();
+
+/* top winners tab */
+const TOP = NAMES.slice(0,9).map((n,i)=>({user:n, amt:rand(8000,70000)*(1-i*.07), game:pick(FGAMES), mult:rand(8,300)}))
+  .sort((a,b)=>b.amt-a.amt);
+function renderTop(){
+  feedEl.innerHTML = '';
+  TOP.sort((a,b)=>b.amt-a.amt).forEach((t,i)=>{
+    const li = document.createElement('li');
+    li.className = 'item' + (i<3?' big':'');
+    li.innerHTML = `<div class="rank r${i+1}">${i+1}</div>${avatar(t.user)}
+      <div class="who"><b>${t.user}</b><small>${t.game} · best ${t.mult.toFixed(1)}×</small></div>
+      <div class="pay"><b class="pos">$${Math.round(t.amt).toLocaleString('en-US')}</b><small>24h profit</small></div>`;
+    feedEl.appendChild(li);
+  });
+}
+setInterval(()=>{ if(tab==='top'){ const t=pick(TOP); t.amt+=rand(50,1800); renderTop(); } }, 1800);
+$$('#tabs button').forEach(b=>b.onclick=()=>{
+  tab=b.dataset.t; $$('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  $('#col-a').textContent = tab==='live'?'Player':'Rank / Player';
+  $('#col-b').textContent = tab==='live'?'Payout':'Profit';
+  feedEl.innerHTML=''; tab==='live' ? Array.from({length:10}).forEach(botBet) : renderTop();
+});
+/* header stats */
+let online=12408, wager=4.82;
+setInterval(()=>{
+  online += Math.round(rand(-14,18)); wager += rand(.001,.006);
+  $('#s-online').textContent = online.toLocaleString('en-US');
+  $('#s-wager').textContent = '$'+wager.toFixed(2)+'M';
+  $('#f-bpm').textContent = Math.round(rand(2100,2600)).toLocaleString('en-US');
+  $('#f-paid').textContent = '$'+Math.round(paid).toLocaleString('en-US');
+},1000);
+
+/* ===== DICE ===== */
+const D = {mode:'over', target:50, busy:false};
+const dr = $('#d-range');
+function diceCalc(){
+  const t = parseFloat(dr.value); D.target = t;
+  const chance = D.mode==='over' ? 100-t : t;
+  const mult = 99/chance;
+  const bet = parseFloat($('#d-bet').value)||0;
+  $('#d-target-l').textContent = (D.mode==='over'?'> ':'< ') + t.toFixed(2);
+  $('#d-chance').textContent = chance.toFixed(2)+'%';
+  $('#d-mult').textContent = mult.toFixed(2)+'×';
+  $('#d-profit').textContent = '+'+fmt(bet*mult-bet);
+  const lose='rgba(255,77,109,.55)', win='rgba(43,255,136,.75)';
+  $('#d-track').style.background = D.mode==='over'
+    ? `linear-gradient(90deg,${lose} ${t}%,${win} ${t}%)`
+    : `linear-gradient(90deg,${win} ${t}%,${lose} ${t}%)`;
+  dr.style.background = D.mode==='over'
+    ? `linear-gradient(90deg,var(--purple) ${t}%,var(--green) ${t}%)`
+    : `linear-gradient(90deg,var(--green) ${t}%,var(--purple) ${t}%)`;
+}
+dr.oninput = diceCalc; $('#d-bet').oninput = diceCalc;
+$$('#d-mode button').forEach(b=>b.onclick=()=>{
+  D.mode=b.dataset.m; $$('#d-mode button').forEach(x=>x.classList.toggle('on',x===b)); diceCalc();
+});
+$$('[data-d]').forEach(b=>b.onclick=()=>{
+  const i=$('#d-bet'); const v=parseFloat(i.value)||0; i.value=(b.dataset.d==='half'?Math.max(.1,v/2):v*2).toFixed(2); diceCalc();
+});
+$('#d-roll').onclick = () => {
+  if(D.busy) return;
+  const bet = readBet($('#d-bet')); if(bet===null) return;
+  D.busy = true; $('#d-roll').disabled = true;
+  setBal(balance-bet, 'Dice bet placed', 'bet');
+  const roll = Math.floor(Math.random()*10000)/100;
+  const win = D.mode==='over' ? roll>D.target : roll<D.target;
+  const chance = D.mode==='over' ? 100-D.target : D.target;
+  const mult = 99/chance;
+  const num = $('#d-num'); num.className='dice-num';
+  let n=0; const tick = setInterval(()=>{ num.textContent=(Math.random()*100).toFixed(2); if(++n>8) clearInterval(tick); },45);
+  $('#d-marker').style.left = roll+'%';
+  setTimeout(()=>{
+    clearInterval(tick);
+    num.textContent = roll.toFixed(2);
+    num.classList.add(win?'win':'lose');
+    if(win){ setBal(balance+bet*mult, 'Dice game return', 'win'); toast(`Win +${fmt(bet*mult-bet)}`); }
+    const s=document.createElement('span'); s.className=win?'w':'l'; s.textContent=roll.toFixed(2);
+    $('#d-hist').prepend(s); while($('#d-hist').children.length>12) $('#d-hist').lastChild.remove();
+    pushFeed({user:'You',game:'Dice',bet,mult:win?mult:0,me:true});
+    D.busy=false; $('#d-roll').disabled=false;
+  },520);
+};
+diceCalc();
+
+/* ===== CRASH ===== */
+const cv = $('#c-canvas'), cx = cv.getContext('2d');
+const stage = $('.crash-stage');
+const C = {state:'wait', t0:0, wait0:performance.now(), point:1, mult:1, bet:0, active:false, round:1, hist:[]};
+const WAIT = 5000, growth = 0.11;
+// Accelerating curve: the exponent itself speeds up, so it creeps at first (~1.5x at 5s),
+// then ramps hard (~2.9x at 10s, ~20x at 20s, ~74x at 25s)
+const multAt = t => Math.exp(0.06*t + 0.0045*t*t);   // t in seconds
+function newPoint(){
+  const r = Math.random();
+  return Math.min(1000, Math.max(1, Math.floor(100*0.97/(1-r))/100));
+}
+function fit(){
+  const r = cv.getBoundingClientRect(), d = window.devicePixelRatio||1;
+  cv.width = r.width*d; cv.height = r.height*d; cx.setTransform(d,0,0,d,0,0);
+}
+window.addEventListener('resize', fit); fit();
+
+function setBtn(){
+  const b = $('#c-btn');
+  b.classList.remove('cash');
+  if(C.state==='wait'){
+    b.disabled = false;
+    b.textContent = C.active ? 'Bet Placed — Cancel' : 'Place Bet';
+  } else if(C.state==='run' && C.active){
+    b.disabled = false; b.classList.add('cash');
+    b.textContent = 'Cash Out @ ' + C.mult.toFixed(2) + '×';
+  } else {
+    b.disabled = true;
+    b.textContent = C.state==='run' ? 'Round in progress' : 'Crashed';
+  }
+}
+$('#c-btn').onclick = () => {
+  if(C.state==='wait'){
+    if(C.active){ setBal(balance+C.bet, 'Crash bet refunded', 'refund'); C.active=false; C.bet=0; $('#c-mybet').textContent='—'; $('#c-pot').textContent='—'; }
+    else { const b=readBet($('#c-bet')); if(b===null) return; setBal(balance-b, 'Crash bet placed', 'bet'); C.bet=b; C.active=true; $('#c-mybet').textContent=fmt(b); }
+  } else if(C.state==='run' && C.active){ cashOut(); }
+  setBtn();
+};
+$$('[data-c]').forEach(b=>b.onclick=()=>{
+  const i=$('#c-bet'); const v=parseFloat(i.value)||0; i.value=(b.dataset.c==='half'?Math.max(.1,v/2):v*2).toFixed(2);
+});
+function cashOut(){
+  const m = C.mult, win = C.bet*m;
+  C.cashAt = m; C.cashT = (performance.now()-C.t0)/1000;
+  const pop = document.createElement('div'); pop.className='pop'; pop.textContent='+'+fmt(win-C.bet);
+  stage.appendChild(pop); setTimeout(()=>pop.remove(),1400);
+  setBal(balance+win, 'Crash cash-out return', 'win'); toast(`Cashed out ${m.toFixed(2)}× · +${fmt(win-C.bet)}`);
+  pushFeed({user:'You',game:'Crash',bet:C.bet,mult:m,me:true});
+  C.active=false; $('#c-pot').textContent='Cashed '+m.toFixed(2)+'×'; setBtn();
+}
+function draw(t){
+  const w = cv.clientWidth, h = cv.clientHeight;
+  cx.clearRect(0,0,w,h);
+  // grid
+  cx.strokeStyle = 'rgba(155,92,255,.12)'; cx.lineWidth = 1;
+  for(let i=1;i<6;i++){ const y=h*i/6; cx.beginPath(); cx.moveTo(0,y); cx.lineTo(w,y); cx.stroke(); }
+  for(let i=1;i<8;i++){ const x=w*i/8; cx.beginPath(); cx.moveTo(x,0); cx.lineTo(x,h); cx.stroke(); }
+  if(C.state==='wait') return;
+  const tx = Math.max(6,t), my = Math.max(2,C.mult*1.18);
+  const px = s => 20 + (s/tx)*(w-40);
+  const py = m => h-24 - ((m-1)/(my-1))*(h-60);
+  const dead = C.state==='dead';
+  const col = dead ? '#ff4d6d' : '#2bff88';
+  cx.beginPath();
+  const N = 90;
+  for(let i=0;i<=N;i++){ const s=t*i/N; const x=px(s), y=py(multAt(s)); i?cx.lineTo(x,y):cx.moveTo(x,y); }
+  const ex = px(t), ey = py(C.mult);
+  // fill
+  cx.save();
+  cx.lineTo(ex,h); cx.lineTo(px(0),h); cx.closePath();
+  const gf = cx.createLinearGradient(0,0,0,h);
+  gf.addColorStop(0, dead?'rgba(255,77,109,.28)':'rgba(43,255,136,.25)'); gf.addColorStop(1,'rgba(155,92,255,0)');
+  cx.fillStyle = gf; cx.fill(); cx.restore();
+  // line
+  cx.beginPath();
+  for(let i=0;i<=N;i++){ const s=t*i/N; const x=px(s), y=py(multAt(s)); i?cx.lineTo(x,y):cx.moveTo(x,y); }
+  cx.strokeStyle = col; cx.lineWidth = 3.5; cx.shadowColor = col; cx.shadowBlur = 16; cx.lineJoin='round'; cx.stroke();
+  cx.shadowBlur = 0;
+  // head
+  cx.beginPath(); cx.arc(ex,ey,6,0,7); cx.fillStyle='#fff'; cx.shadowColor=col; cx.shadowBlur=20; cx.fill(); cx.shadowBlur=0;
+  // marker where the player cashed out
+  if(C.cashT!=null){
+    const mx = px(C.cashT), my2 = py(C.cashAt);
+    cx.beginPath(); cx.arc(mx,my2,9,0,7); cx.strokeStyle='#9b5cff'; cx.lineWidth=3; cx.shadowColor='#9b5cff'; cx.shadowBlur=18; cx.stroke(); cx.shadowBlur=0;
+    cx.fillStyle='#d9c4ff'; cx.font='700 12px Inter,system-ui,sans-serif'; cx.fillText(C.cashAt.toFixed(2)+'×', mx+14, my2-10);
+  }
+}
+function addHist(v){
+  const s=document.createElement('span'); s.className=v>=2?'w':'l'; s.textContent=v.toFixed(2)+'×';
+  $('#c-hist').prepend(s); while($('#c-hist').children.length>12) $('#c-hist').lastChild.remove();
+}
+function frame(now){
+  const box = $('#c-mult'), val = $('#c-val'), sub = $('#c-sub');
+  if(C.state==='wait'){
+    const left = Math.max(0, WAIT-(now-C.wait0));
+    box.className='crash-mult wait'; val.textContent=(left/1000).toFixed(1)+'s'; sub.textContent='Next round — place your bet';
+    box.style.setProperty('--i','0'); val.style.color=''; val.style.textShadow='';
+    stage.classList.remove('boom','shake'); stage.style.boxShadow=''; stage.style.borderColor='';
+    if(left<=0){
+      C.state='run'; C.t0=now; C.point=newPoint(); C.mult=1;
+      if(C.active) $('#c-pot').textContent = fmt(C.bet);
+      setBtn();
+    }
+    draw(0);
+  } else if(C.state==='run'){
+    const t = (now-C.t0)/1000;
+    C.mult = Math.floor(multAt(t)*100)/100;
+    if(C.mult>=C.point){
+      C.mult = C.point; C.state='dead';
+      box.className='crash-mult dead'; val.textContent=C.point.toFixed(2)+'×'; sub.textContent='Crashed';
+      box.style.setProperty('--i','0'); val.style.color=''; val.style.textShadow='';
+      stage.classList.remove('shake'); stage.style.boxShadow=''; stage.style.borderColor='';
+      void stage.offsetWidth; stage.classList.add('boom');
+      addHist(C.point);
+      if(C.active){ pushFeed({user:'You',game:'Crash',bet:C.bet,mult:0,me:true}); toast('Crashed @ '+C.point.toFixed(2)+'× — bet lost',true); C.active=false; $('#c-pot').textContent='Lost'; }
+      C.deadAt = now; draw(t); setBtn();
+    } else {
+      // pressure builds as the multiplier climbs: bigger, faster pulse, hotter colour, glow, shake
+      const k = Math.min(1, Math.log(C.mult)/Math.log(50));
+      const hu = 145 + k*185;
+      box.className='crash-mult run'; val.textContent=C.mult.toFixed(2)+'×'; sub.textContent='Current payout';
+      box.style.setProperty('--i',k.toFixed(3));
+      box.style.setProperty('--pd',(1.1-0.85*k).toFixed(2)+'s');
+      val.style.color=`hsl(${hu} 100% 62%)`;
+      val.style.textShadow=`0 0 ${30+k*40}px hsl(${hu} 100% 55% / .7)`;
+      stage.style.borderColor=`hsl(${hu} 100% 55% / ${.25+k*.5})`;
+      stage.style.boxShadow=`0 0 ${20+k*50}px hsl(${hu} 100% 55% / ${.12+k*.3}), inset 0 0 ${30+k*60}px hsl(${hu} 100% 55% / ${.04+k*.12})`;
+      stage.style.setProperty('--sh',(k*k*5).toFixed(2)+'px');
+      stage.classList.toggle('shake',k>.35);
+      if(C.active){
+        $('#c-pot').textContent = fmt(C.bet*C.mult);
+        const auto = parseFloat($('#c-auto').value);
+        if(auto>=1.01 && C.mult>=auto){ cashOut(); }
+        else if(Math.floor(now/80)!==C._b){ C._b=Math.floor(now/80); setBtn(); }
+      }
+      draw(t);
+    }
+  } else { // dead
+    draw((C.deadAt-C.t0)/1000);
+    if(now-C.deadAt>2600){
+      C.state='wait'; C.wait0=now; C.round++; C.bet=0; C.active=false; C.cashT=null;
+      $('#c-round').textContent='#'+C.round; $('#c-mybet').textContent='—'; $('#c-pot').textContent='—'; setBtn();
+    }
+  }
+  requestAnimationFrame(frame);
+}
+setBtn(); requestAnimationFrame(frame);
+['pointermove'].forEach(()=>{}); // (reserved)
+
+
+/* ================= VOLTA V4 FEATURES ================= */
+(()=>{
+  const V4KEY='volta-v4-profile-social-v1';
+  const defaults={name:'VoltPlayer',avatar:'V',friends:['NeonWolf','PixelPaul'],requests:[],claimed:{},streak:0,lastReward:'',sound:false,compact:false,theme:'default',played:0,wins:0};
+  let v4={...defaults};
+  try{v4={...defaults,...JSON.parse(localStorage.getItem(V4KEY)||'{}')};}catch(e){}
+  const save=()=>{try{localStorage.setItem(V4KEY,JSON.stringify(v4));}catch(e){toast('Could not save settings on this device',true);}};
+  const page=$('#v4-page');
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const xp=()=>Math.floor((walletStats.wagered||0)*.2+(v4.played||0)*25);
+  const level=()=>Math.max(1,Math.floor(xp()/500)+1);
+  const tier=()=>{const l=level();return l>=30?'DIAMOND':l>=20?'PLATINUM':l>=10?'GOLD':l>=5?'SILVER':'BRONZE';};
+  const nextXp=()=>xp()%500;
+  const pct=()=>Math.round(nextXp()/500*100);
+  const title=(eyebrow,heading,desc,tag='DEMO MODE')=>`<div class="v4-head"><div><div class="v4-kicker">${eyebrow}</div><h1>${heading}</h1><p>${desc}</p></div><span class="demo-stamp"><i></i>${tag}</span></div>`;
+  const card=(html)=>`<div class="v4-card">${html}</div>`;
+  const row=(a,b,c='')=>`<div class="v4-listrow"><div class="grow"><b>${a}</b><small>${b}</small></div>${c}</div>`;
+  const localTop=[{name:'NeonWolf',score:12840},{name:'PixelPaul',score:10920},{name:'Nova',score:9850},{name:'ShadowFox',score:8140},{name:'EchoBay',score:7620},{name:'VoltRider',score:6940},{name:'Quasar',score:5320},{name:'LuckyKai',score:4210}];
+  const top=[...localTop,{name:me.name,score:me.score}].sort((a,b)=>b.score-a.score);
+  const achievements=()=>[
+    ['First steps','Play your first demo round',v4.played>=1,'🎮'],['Getting started','Play 10 demo rounds',v4.played>=10,'⚡'],['Hot streak','Win 5 demo rounds',v4.wins>=5,'🔥'],['Big spender','Wager 1,000 demo credits',walletStats.wagered>=1000,'💎'],['Regular','Log in on 3 different reward days',v4.streak>=3,'📅'],['Collector','Add 5 friends',v4.friends.length>=5,'🤝']
+  ];
+  const missions=()=>[
+    {id:'play3',name:'Warm up',desc:'Play 3 demo rounds',progress:Math.min(v4.played,3),goal:3,reward:150},
+    {id:'win2',name:'Find your rhythm',desc:'Record 2 winning rounds',progress:Math.min(v4.wins,2),goal:2,reward:200},
+    {id:'wager500',name:'Game explorer',desc:'Wager 500 demo credits',progress:Math.min(walletStats.wagered||0,500),goal:500,reward:250}
+  ];
+  function updateShell(){
+    const vip=$('.vip'); if(vip){vip.querySelector('h4').innerHTML=`Level ${level()} <b>${tier()} VIP</b>`;vip.querySelector('.bar i').style.width=pct()+'%';vip.querySelector('p').textContent=`${500-nextXp()} XP to ${level()+1}`;}
+    const av=$('.top-right .avatar');if(av)av.textContent=(v4.avatar||v4.name[0]||'V').slice(0,2).toUpperCase();
+  }
+  function nav(){
+    const items=[['leaderboard','♜','Leaderboard'],['rewards','✦','Rewards & missions'],['profile','◉','Player profile'],['stats','▥','Statistics'],['friends','♧','Friends'],['vip','♛','VIP club'],['settings','⚙','Settings'],['admin','▦','Admin overview']];
+    $('#nav2').innerHTML=items.map(([id,ic,label])=>`<button type="button" data-v4-page="${id}" title="${label}" class="${current===id?'active':''}"><i style="font-style:normal;font-size:18px;width:18px;text-align:center">${ic}</i><span>${label}</span></button>`).join('');
+    $('#nav2').querySelectorAll('[data-v4-page]').forEach(b=>b.addEventListener('click',()=>showV4(b.dataset.v4Page)));
+  }
+  let current='';
+  const originalShowPage=showPage;
+  function showV4(which){
+    current=which;
+    ['.hero','#featured','#lobby','#wallet-page'].forEach(sel=>{const el=$(sel);if(el)el.style.display='none';});
+    page.style.display='flex';
+    $$('.account-nav').forEach(b=>b.classList.remove('active'));
+    nav();render();$('.content').scrollTo({top:0,behavior:'smooth'});
+  }
+  showPage=function(which){
+    if(['leaderboard','rewards','profile','stats','friends','vip','settings','admin'].includes(which))return showV4(which);
+    current='';page.style.display='none';nav();return originalShowPage(which);
+  };
+  $$('.account-nav').forEach(b=>b.addEventListener('click',()=>{current='';page.style.display='none';nav();}));
+  function render(){
+    updateShell();top.splice(0,top.length,...[...localTop,{name:v4.name,score:xp()}].sort((a,b)=>b.score-a.score));let html='';
+    if(current==='leaderboard'){
+      html=title('COMMUNITY','Global leaderboard','Compare experience points with the VOLTA demo community.')+card(`<h3>Top players · XP ranking</h3><p class="v4-muted">Sample community entries are illustrative. Your score is calculated on this device.</p><div class="v4-list" style="margin-top:13px">${top.map((x,i)=>row(`<span class="v4-rank ${i===0?'gold':''}">#${i+1}</span> ${esc(x.name)}${x.name===v4.name?' <span class="v4-badge">YOU</span>':''}`,`${x.score.toLocaleString()} XP`,i===0?'🏆':'' )).join('')}</div>`);
+    }else if(current==='rewards'){
+      const today=new Date().toISOString().slice(0,10),claimedToday=v4.lastReward===today;
+      html=title('REWARDS CENTER','Daily rewards & missions','Collect free demo credits and complete challenges. Rewards never have cash value.')+
+        `<div class="v4-grid">${card(`<h3>Daily login reward</h3><div class="v4-number">+${250+Math.min(v4.streak,6)*50}</div><p>Demo credits · Day ${Math.max(1,v4.streak+1)} streak</p><div class="v4-actions"><button class="v4-btn primary" data-action="daily" ${claimedToday?'disabled':''}>${claimedToday?'Collected today':'Collect reward'}</button></div>`)}${card(`<h3>Current streak</h3><div class="v4-number">${v4.streak} days</div><p>Come back on another day to continue your streak.</p>`)}${card(`<h3>Achievement collection</h3><div class="v4-number">${achievements().filter(a=>a[2]).length}/${achievements().length}</div><p>Unlocked milestones</p>` )}</div>`+
+        card(`<h3>Daily missions</h3><p class="v4-muted">Progress updates from your recorded demo activity.</p><div class="v4-list" style="margin-top:12px">${missions().map(m=>{const done=m.progress>=m.goal,claimed=!!v4.claimed[m.id];return `<div class="v4-listrow"><div class="grow"><b>${m.name}</b><small>${m.desc} · ${m.progress}/${m.goal}</small><div class="v4-progress"><i style="width:${Math.min(100,m.progress/m.goal*100)}%"></i></div></div><button class="v4-btn ${done&&!claimed?'primary':''}" data-claim="${m.id}" ${!done||claimed?'disabled':''}>${claimed?'Claimed':`+${m.reward}`}</button></div>`}).join('')}</div>`)+
+        card(`<h3>Achievements</h3><div class="v4-grid" style="margin-top:12px">${achievements().map(a=>`<div class="v4-card"><div style="font-size:24px">${a[3]}</div><b>${a[0]}</b><p>${a[1]}</p><div style="margin-top:9px"><span class="v4-badge">${a[2]?'UNLOCKED':'LOCKED'}</span></div></div>`).join('')}</div>`);
+    }else if(current==='profile'){
+      html=title('PLAYER ID','Your profile','Manage your local player identity and view your progression.')+
+        `<div class="v4-two">${card(`<div class="v4-row"><div class="v4-avatar">${esc(v4.avatar||'V')}</div><div><h3>${esc(v4.name)}</h3><p>${tier()} · Level ${level()}</p></div></div><div class="v4-progress"><i style="width:${pct()}%"></i></div><p>${nextXp()} / 500 XP to next level</p><div class="v4-actions"><button class="v4-btn" data-action="edit-profile">Edit profile</button></div>`)}${card(`<h3>Player snapshot</h3><div class="v4-number">${(walletStats.wagered||0).toLocaleString()} </div><p>Total demo credits wagered</p><div class="v4-number">${v4.played}</div><p>Rounds played</p>` )}</div>`+
+        card(`<h3>Recent achievements</h3><div class="v4-list">${achievements().filter(a=>a[2]).map(a=>row(a[3]+' '+a[0],a[1],'<span class="v4-badge">UNLOCKED</span>')).join('')||'<div class="v4-empty">Play some demo games to unlock your first achievement.</div>'}</div>`);
+    }else if(current==='stats'){
+      const betsN=transactions.filter(t=>t.type==='bet').length, winsN=transactions.filter(t=>t.type==='win').length;
+      const totalWins=transactions.filter(t=>t.type==='win').reduce((a,t)=>a+t.amount,0), totalLoss=transactions.filter(t=>t.type==='bet').reduce((a,t)=>a+Math.abs(t.amount),0);
+      const gameNet=walletStats.gameNet||0;
+      html=title('PERFORMANCE','Your statistics','A live summary calculated from your local VOLTA wallet ledger.')+
+        `<div class="v4-grid">${card(`<p>Rounds played</p><div class="v4-number">${v4.played}</div><p>Recorded demo stakes</p>`)}${card(`<p>Winning returns</p><div class="v4-number">${winsN}</div><p>Winning ledger entries</p>`)}${card(`<p>Win rate</p><div class="v4-number">${betsN?Math.round(winsN/betsN*100):0}%</div><p>Winning returns / stakes (approx.)</p>`)}${card(`<p>Total wagered</p><div class="v4-number">${fmt(walletStats.wagered||0)}</div><p>Demo credits</p>`)}${card(`<p>Total returned</p><div class="v4-number">${fmt(totalWins)}</div><p>Demo credits</p>`)}${card(`<p>Net game result</p><div class="v4-number" style="color:${gameNet>=0?'var(--green)':'var(--red)'}">${gameNet>=0?'+':'−'}${fmt(Math.abs(gameNet))}</div><p>Demo credits</p>`)}</div>`+
+        card(`<h3>Wallet activity breakdown</h3><table class="v4-table"><tr><td>Game stakes</td><td>${betsN}</td><td>${fmt(totalLoss)} credits</td></tr><tr><td>Game returns</td><td>${winsN}</td><td>${fmt(totalWins)} credits</td></tr><tr><td>Ledger records</td><td>${transactions.length}</td><td>Local device</td></tr></table><div class="v4-actions"><button class="v4-btn" data-action="history">Open transaction history</button></div>`);
+    }else if(current==='friends'){
+      html=title('SOCIAL HUB','Friends & challenges','Manage a local friends list and send demo challenges. No real accounts or online messaging are connected.')+
+        card(`<h3>Add a friend</h3><div class="v4-form"><input class="v4-input" id="friend-name" maxlength="24" placeholder="Enter a display name"><button class="v4-btn primary" data-action="add-friend">Add friend</button></div>`)+
+        card(`<h3>Your friends · ${v4.friends.length}</h3><div class="v4-list" style="margin-top:12px">${v4.friends.map((f,i)=>row(`<span class="v4-avatar" style="width:34px;height:34px;display:inline-grid;font-size:12px">${esc(f[0].toUpperCase())}</span> ${esc(f)}`,'Local friend profile',`<button class="v4-btn" data-challenge="${i}">Challenge</button> <button class="v4-btn" data-remove="${i}">Remove</button>`)).join('')||'<div class="v4-empty">No friends yet. Add a display name above.</div>'}</div>`)+
+        card(`<h3>Incoming requests</h3><div class="v4-empty">No incoming requests. This is an offline demo social system.</div>`);
+    }else if(current==='vip'){
+      const tiers=[['BRONZE',1],['SILVER',5],['GOLD',10],['PLATINUM',20],['DIAMOND',30]];
+      html=title('VOLTA VIP','VIP progression','Earn XP by playing demo games and unlock profile tiers. VIP has no monetary benefits.')+
+        card(`<div class="v4-row"><div class="v4-avatar">♛</div><div><h3>${tier()} MEMBER · LEVEL ${level()}</h3><p class="v4-muted">${xp().toLocaleString()} total XP</p></div></div><div class="v4-progress"><i style="width:${pct()}%"></i></div><p class="v4-muted">${500-nextXp()} XP remaining to the next level</p>`)+
+        `<div class="v4-grid">${tiers.map(t=>card(`<span class="v4-badge">${t[0]}</span><div class="v4-number">${t[1]}</div><p>Level ${t[1]} requirement</p><p style="margin-top:9px">${level()>=t[1]?'✓ Unlocked':'Keep playing demo games'}</p>`)).join('')}</div>`+
+        card(`<h3>How XP works</h3><p>VOLTA awards 25 XP per recorded demo stake plus 0.2 XP per demo credit wagered. XP is stored locally and cannot be exchanged for money.</p>`);
+    }else if(current==='settings'){
+      html=title('PREFERENCES','Settings','Customize this browser-based demo experience.')+
+        card(`<div class="v4-setting"><div><b>Sound effects</b><p class="v4-muted">Preference saved locally (sound playback is not connected).</p></div><input type="checkbox" data-setting="sound" ${v4.sound?'checked':''}></div><div class="v4-setting"><div><b>Compact layout</b><p class="v4-muted">Reduce spacing in the dashboard.</p></div><input type="checkbox" data-setting="compact" ${v4.compact?'checked':''}></div><div class="v4-setting"><div><b>Accent theme</b><p class="v4-muted">Switch the interface accent colors.</p></div><select class="v4-input" style="max-width:170px" data-setting="theme"><option value="default" ${v4.theme==='default'?'selected':''}>Neon green</option><option value="purple" ${v4.theme==='purple'?'selected':''}>Purple</option><option value="blue" ${v4.theme==='blue'?'selected':''}>Electric blue</option></select></div><div class="v4-actions"><button class="v4-btn" data-action="reset-settings">Reset preferences</button></div>`)+
+        card(`<h3>Privacy & data</h3><p>Your profile, friend list, rewards and preferences are saved in this browser's local storage. Clearing browser data removes them. Wallet and transaction history remain in the existing VOLTA demo wallet storage.</p>`);
+    }else if(current==='admin'){
+      const today=new Date().toLocaleDateString();
+      html=title('LOCAL CONTROL ROOM','Admin overview','A local analytics panel for this demo installation. It is not a secure multi-user admin system.')+
+        `<div class="v4-grid">${card(`<p>Demo wallet balance</p><div class="v4-number">${fmt(balance)}</div><p>Current local balance</p>`)}${card(`<p>Ledger entries</p><div class="v4-number">${transactions.length}</div><p>Saved transaction records</p>`)}${card(`<p>Registered local profile</p><div class="v4-number">1</div><p>This browser profile</p>`)}${card(`<p>Demo rounds</p><div class="v4-number">${v4.played}</div><p>Recorded stake entries</p>`)}${card(`<p>Demo credits wagered</p><div class="v4-number">${fmt(walletStats.wagered||0)}</div><p>Lifetime local total</p>`)}${card(`<p>Current VIP tier</p><div class="v4-number">${tier()}</div><p>Level ${level()}</p>`)}</div>`+
+        card(`<h3>Recent wallet activity</h3><p class="v4-muted">As of ${today} · latest 8 local records</p><div class="v4-list" style="margin-top:12px">${transactions.slice(0,8).map(t=>row(esc(t.reason),new Date(t.time).toLocaleString(),`${t.amount>=0?'+':'−'}${fmt(Math.abs(t.amount))}`)).join('')||'<div class="v4-empty">No activity recorded yet.</div>'}</div><div class="v4-note" style="margin-top:14px">Admin overview is informational only. It has no server, authentication, moderation, payment or cross-user control.</div>`);
+    }
+    page.innerHTML=html;bindPage();
+  }
+  function bindPage(){
+    page.querySelectorAll('[data-action="daily"]').forEach(b=>b.onclick=()=>{const today=new Date().toISOString().slice(0,10);if(v4.lastReward===today)return;const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);v4.streak=v4.lastReward===yesterday?v4.streak+1:1;v4.lastReward=today;save();addDemoCredits(250+Math.min(v4.streak-1,6)*50);render();});
+    page.querySelectorAll('[data-claim]').forEach(b=>b.onclick=()=>{const m=missions().find(x=>x.id===b.dataset.claim);if(!m||m.progress<m.goal||v4.claimed[m.id])return;v4.claimed[m.id]=true;save();addDemoCredits(m.reward);render();});
+    page.querySelectorAll('[data-action="edit-profile"]').forEach(b=>b.onclick=()=>{const name=prompt('Choose a display name (2–24 characters):',v4.name);if(name===null)return;const clean=name.trim().slice(0,24);if(clean.length<2){toast('Name must be at least 2 characters',true);return;}v4.name=clean;v4.avatar=clean[0].toUpperCase();save();render();});
+    page.querySelectorAll('[data-action="add-friend"]').forEach(b=>b.onclick=()=>{const el=$('#friend-name'),name=(el?.value||'').trim().slice(0,24);if(name.length<2){toast('Enter a name with at least 2 characters',true);return;}if(name.toLowerCase()===v4.name.toLowerCase()||v4.friends.some(f=>f.toLowerCase()===name.toLowerCase())){toast('That name is already in your list',true);return;}v4.friends.push(name);save();render();toast('Friend added locally');});
+    page.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{v4.friends.splice(Number(b.dataset.remove),1);save();render();});
+    page.querySelectorAll('[data-challenge]').forEach(b=>b.onclick=()=>toast('Challenge prepared for '+v4.friends[Number(b.dataset.challenge)]+' · local demo only'));
+    page.querySelectorAll('[data-setting]').forEach(el=>el.onchange=()=>{v4[el.dataset.setting]=el.type==='checkbox'?el.checked:el.value;save();applySettings();toast('Preference saved');});
+    page.querySelectorAll('[data-action="reset-settings"]').forEach(b=>b.onclick=()=>{v4.sound=false;v4.compact=false;v4.theme='default';save();applySettings();render();});
+    page.querySelectorAll('[data-action="history"]').forEach(b=>b.onclick=()=>showPage('history'));
+  }
+  function applySettings(){document.body.classList.toggle('v4-compact',!!v4.compact);const root=document.documentElement;if(v4.theme==='purple'){root.style.setProperty('--green','#b18aff');root.style.setProperty('--green-d','#8756e8');}else if(v4.theme==='blue'){root.style.setProperty('--green','#65c7ff');root.style.setProperty('--green-d','#278bd4');}else{root.style.setProperty('--green','#58f5a5');root.style.setProperty('--green-d','#22c879');}}
+  // Keep game outcomes and the existing ledger as the source of truth for progression.
+  const oldRecord=recordTransaction;
+  recordTransaction=function(amount,reason,type){oldRecord(amount,reason,type);if(type==='bet'){v4.played++;save();}if(type==='win'){v4.wins++;save();}if(current)render();updateShell();};
+  const oldSetBal=setBal;
+  setBal=function(v,reason,type){oldSetBal(v,reason,type);updateShell();};
+  const oldWallet=renderWallet;
+  renderWallet=function(){oldWallet();updateShell();};
+  applySettings();nav();updateShell();
+})();
+
+
+/* V8 room renderer: every title gets a distinct scene treatment */
+const voltaOriginalRender=gmRender;
+function voltaRoomArt(game){
+ const n=game.n, icon=game.g||'✦', mode=game.mode||game.c;
+ const classes={
+  'Coin Flip':['coin','coin','coin'],'Blackjack VIP':['card','card','card'],'Texas Hold’em':['card','card','card'],
+  'Speed Baccarat':['card','card','card'],'Pai Gow Demo':['card','card','card'],'Three Card Poker':['card','card','card'],'War Cards':['card','card','card'],
+  'Neon Fruits':['slot','slot','slot'],'Gates of Olympus':['gem','gem','gem'],'Cyber Samurai':['gem','gem','gem'],
+  'Wild Bonanza':['gem','gem','gem'],'Sweet Cascade':['gem','gem','gem'],'Diamond Reels':['gem','gem','gem'],
+  'Golden Pharaoh':['gem','gem','gem'],'Moonlight Gems':['gem','gem','gem'],'Ocean Treasures':['gem','gem','gem'],
+  'Dragon Fortune':['gem','gem','gem'],'Lucky Lanterns':['gem','gem','gem'],'Arctic Wilds':['gem','gem','gem'],'Starfall Spins':['gem','gem','gem'],
+  'Prize Wheel':['wheel','wheel','wheel'],'Crazy Time':['wheel','wheel','wheel'],'Lightning Roulette':['wheel','wheel','wheel'],'Euro Roulette':['wheel','wheel','wheel'],
+  'Plinko':['ball','ball','ball'],'Mines':['gem','gem','gem'],'Keno':['gem','gem','gem'],'Tower':['gem','gem','gem']
+ };
+ const types=classes[n]|| (mode==='sports'?['ball','ball','ball']:mode==='reels'?['slot','slot','slot']:mode==='table'?['card','card','card']:mode==='puzzle'?['gem','gem','gem']:mode==='arcade'||mode==='race'||mode==='space'||mode==='reflex'?['ball','gem','ball']:['gem','ball','gem']);
+ const icons=n==='Coin Flip'?['H','T','H']:n==='Blackjack VIP'?['A♠','K♥','21']:n==='Texas Hold’em'?['A♥','K♠','♣']:n==='Prize Wheel'||n==='Crazy Time'?['1×','5×','10×']:n==='Plinko'?['●','●','●']:n==='Mines'?['✦','✹','✦']:n==='Tower'?['♜','♜','♜']:n==='Keno'?['07','12','19']:n.includes('Roulette')?['0','17','32']:n.includes('Baccarat')?['P','B','T']:n.includes('Poker')||n.includes('Cards')?['A','Q','K']:n.includes('Slots')||game.c==='slots'?[icon,'7','💎']:[icon,'✦','⚡'];
+ return `<div class="room-art"><div class="room-ring"></div>${types.map((t,i)=>`<div class="room-orb ${t}">${icons[i]}</div>`).join('')}</div>`;
+}
+function gmRender(){
+ voltaOriginalRender();
+ const game=GAMES.find(x=>x.n===gm.name);if(!game)return;
+ const v=$gm('gm-visual');v.dataset.game=gm.name;v.dataset.kind=game.mode||game.c;
+ v.style.setProperty('--gm-accent',game.gl||'#a879ff');
+ v.innerHTML=`<div class="gm-v-copy"><div class="gm-v-kicker">${game.p} · ${game.t||'GAME ROOM'}</div><div class="gm-v-name">${game.n}</div><div class="gm-v-desc">A dedicated ${game.c} room with its own visual identity, motion and demo-play controls.</div></div>${voltaRoomArt(game)}<div class="gm-v-hud"><span class="gm-v-chip">● DEMO</span><span class="gm-v-chip">${game.c.toUpperCase()}</span></div>`;
+}
+const voltaStart=gmStart;
+gmStart=function(){
+ const v=$gm('gm-visual'),st=$gm('gm-stage');
+ if(v){v.classList.add('is-playing');}
+ if(st)st.classList.remove('reveal');
+ voltaStart();
+ if(st){st.classList.add('reveal');}
+ if(v){setTimeout(()=>v.classList.remove('is-playing'),650);}
+};
+
+
+function gmDice(){const roll=Math.floor(Math.random()*100)+1,choice=$gm('gm-choice').value,win=choice==='over'?roll>50:roll<50,m=win?1.9:0;gmStage('ROLL '+roll,`Your pick: ${choice==='over'?'over':'under'} 50 · ${win?'You hit the condition':'The roll missed'}`,`<div class="gm-dice">🎲 <span class="gm-number-ball">${roll}</span></div>`);gmFinish(m,win?'Dice win':'Dice loss');}
+function gmCrash(){const target=Math.max(1.1,Math.min(10,Number($gm('gm-target').value)||2)),crash=1+Math.random()*8,win=target<=crash,m=win?target*.97:0;gmStage('1.00×','Multiplier rising…',`<div class="gm-result" id="crash-mult" style="font-size:54px;color:#55f0a3">1.00×</div><div style="height:9px;background:#25283b;border-radius:9px;overflow:hidden;margin:15px auto;max-width:360px"><i id="crash-bar" style="display:block;height:100%;width:4%;background:linear-gradient(90deg,#43d98a,#b9ff76);transition:width .1s"></i></div>`);gmActions('');let value=1,step=0;const timer=setInterval(()=>{step++;value=1+step*.12;const label=$gm('crash-mult'),bar=$gm('crash-bar');if(label)label.textContent=Math.min(value,win?target:crash).toFixed(2)+'×';if(bar)bar.style.width=Math.min(100,step*4)+'%';if(value>= (win?target:crash)||step>80){clearInterval(timer);if(win){gmStage('CASHED OUT · '+target.toFixed(2)+'×',`Demo auto cash-out reached before the crash point (${crash.toFixed(2)}×)`);gmFinish(m,'Crash demo cash-out');}else{gmStage('CRASHED · '+crash.toFixed(2)+'×','The multiplier crashed before your auto cash-out.');gmFinish(0,'Crash demo round lost');}}},85);}
+function gmLuckyNumber(){const pick=Math.max(1,Math.min(20,Number($gm('gm-number').value)||1)),draw=1+Math.floor(Math.random()*20),win=pick===draw;gmStage('NUMBER '+draw,`Your number ${pick} · ${win?'Exact match':'No match'}`,`<div class="gm-number-ball">${draw}</div>`);gmFinish(win?18:0,win?'Lucky number jackpot':'Lucky number missed');}
+function gmDragonTiger(){const d=gmCard(),t=gmCard(),winner=d.rank===t.rank?'Tie':d.rank>t.rank?'Dragon':'Tiger',pick=$gm('gm-choice').value,m=pick===winner?(winner==='Tie'?8:1.95):0;gmStage(winner,`Dragon ${d.label} · Tiger ${t.label} · Your pick: ${pick}`,gmShowCards([d,t]));gmFinish(m,m?'Dragon Tiger win':'Dragon Tiger loss');}
+function gmSicBo(){const dice=[1,2,3].map(()=>1+Math.floor(Math.random()*6)),sum=dice.reduce((a,b)=>a+b,0),triple=dice.every(x=>x===dice[0]),pick=$gm('gm-choice').value,win=pick==='Triple'?triple:pick==='Small'?sum>=4&&sum<=10&&!triple:sum>=11&&sum<=17&&!triple,m=win?(triple?30:1.9):0;gmStage('Total '+sum,`Dice: ${dice.join(' · ')} · ${triple?'Triple':sum<=10?'Small':'Big'}`,`<div class="gm-dice">${dice.map(x=>['','⚀','⚁','⚂','⚃','⚄','⚅'][x]).join(' ')}</div>`);gmFinish(m,m?'Sic Bo win':'Sic Bo loss');}
+function gmCraps(){const a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6),sum=a+b,pick=$gm('gm-choice').value,pass=sum===7||sum===11,lose=sum===2||sum===3||sum===12,win=pick==='Pass'?pass:lose,m=win?1.95:0;gmStage('Roll '+sum,`Dice ${a} + ${b} · ${pass?'Pass line wins':lose?'Pass line loses':'Point established — simplified demo round'}`,`<div class="gm-dice">${['⚀','⚁','⚂','⚃','⚄','⚅'][a-1]} ${['⚀','⚁','⚂','⚃','⚄','⚅'][b-1]}</div>`);gmFinish(m,m?'Craps demo win':'Craps demo loss');}
+function gmCasinoWar(){const a=gmCard(),b=gmCard(),win=a.rank>b.rank,m=a.rank===b.rank?($gm('gm-choice').value==='War'?3.8:1):win?1.95:0;gmStage(a.rank===b.rank?'WAR!':win?'PLAYER WINS':'DEALER WINS',`Your card ${a.label} · Dealer ${b.label}`,gmShowCards([a,b]));gmFinish(m,m?'Casino War win':'Casino War loss');}
+function gmThreeCard(){const pick=$gm('gm-choice').value;if(pick==='Fold'){gmStage('Folded','You folded before the comparison.');return gmFinish(0,'Hand folded');}const player=[gmCard(),gmCard(),gmCard()],dealer=[gmCard(),gmCard(),gmCard()],p=player.reduce((a,c)=>a+c.rank,0),d=dealer.reduce((a,c)=>a+c.rank,0),win=p>d,m=win?1.9:p===d?1:0;gmStage(win?'PLAYER HAND WINS':p===d?'PUSH':'DEALER HAND WINS',`Player total ${p} · Dealer total ${d} · Simplified demo comparison`,gmShowCards(player)+gmShowCards(dealer));gmFinish(m,'Three-card table hand settled');}
+function gmVideoPoker(){const hand=Array.from({length:5},()=>gmCard()),counts={};hand.forEach(c=>counts[c.rank]=(counts[c.rank]||0)+1);const groups=Object.values(counts).sort((a,b)=>b-a),pairs=groups[0]===2?1:0,three=groups[0]===3,four=groups[0]===4,flush=hand.every(c=>c.suit===hand[0].suit),ranks=hand.map(c=>c.rank).sort((a,b)=>a-b),straight=ranks.every((v,i)=>i===0||v===ranks[i-1]+1),mult=four?25:three&&pairs?8:flush&&straight?20:flush?6:straight?5:three?3:pairs?1.5:0;gmStage(mult?'WINNING HAND':'NO PAYING HAND',`Video Poker · ${mult?mult+'× return':'No winning combination'}`,gmShowCards(hand));gmFinish(mult,'Video Poker hand complete');}
+function gmScratch(){const symbols=['💎','7️⃣','🍀','⭐','🔔','👑'],cards=Array.from({length:9},()=>symbols[Math.floor(Math.random()*symbols.length)]),counts={};cards.forEach(x=>counts[x]=(counts[x]||0)+1);const best=Math.max(...Object.values(counts)),mult=best>=5?8:best===4?3:best===3?1.5:0;gmStage('CARD REVEALED',best+' matching symbols',`<div class="gm-grid" style="grid-template-columns:repeat(3,1fr)">${cards.map(x=>`<div class="gm-tile safe">${x}</div>`).join('')}</div>`);gmFinish(mult,mult?'Scratch card win':'No match');}
+function gmFanTan(){const pile=1+Math.floor(Math.random()*40),rem=pile%4||4,pick=Number($gm('gm-choice').value),win=pick===rem;gmStage('Remainder '+rem,`A pile of ${pile} counters leaves remainder ${rem} when grouped by four`);gmFinish(win?3.7:0,win?'Fan Tan win':'Fan Tan loss');}
+function gmRedDog(){const a=gmCard(),b=gmCard(),gap=Math.abs(a.rank-b.rank)-1,choice=$gm('gm-choice').value,win=gap>0?choice==='Spread':choice==='No Spread',m=win?(gap>=4?4:gap>=2?2.5:1.9):0;gmStage(gap>0?'SPREAD '+gap:'NO SPREAD',`Cards ${a.label} and ${b.label} · ${gap} ranks between`,gmShowCards([a,b]));gmFinish(m,win?'Red Dog win':'Red Dog loss');}
+function gmCoinFlip(){
+ const choice=$gm('gm-choice').value;
+ const v=$gm('gm-visual'),coin=v?.querySelector('.room-orb.coin');
+ const result=Math.random()<.5?'Heads':'Tails',win=choice===result;
+ if(coin){
+  coin.classList.remove('flipping');
+  coin.innerHTML='<span class="coin-face heads">H</span><span class="coin-face tails">T</span>';
+  void coin.offsetWidth;coin.classList.add('flipping');
+ }
+ const stage=$gm('gm-stage');
+ setTimeout(()=>{
+  if(coin){coin.classList.remove('flipping');coin.textContent=result==='Heads'?'H':'T';}
+  gmStage(result,`You picked ${choice} · ${win?'Correct side':'Not this time'}`,`<div class="gm-reels"><div class="gm-reel">${result==='Heads'?'H':'T'}</div></div>`);
+  if(stage)stage.classList.add('reveal');
+  gmFinish(win?1.95:0,win?'Coin flip won':'Coin flip lost');
+ },1350);
+}
+
+</script>
+
+<style id="volta-realism-upgrade">
+#volta-integration-launch{position:fixed;right:18px;bottom:18px;z-index:9998;background:linear-gradient(135deg,#b98b36,#f4d47b);color:#211606;border:1px solid #ffe5a0;border-radius:999px;padding:12px 17px;font-weight:900;box-shadow:0 8px 32px #d7a83b44;letter-spacing:.3px}
+#volta-integration-modal{position:fixed;inset:0;z-index:9999;display:none;place-items:center;background:#05030bd9;backdrop-filter:blur(12px);padding:18px}
+#volta-integration-modal.open{display:grid}
+.vi-panel{width:min(760px,100%);max-height:90vh;overflow:auto;background:linear-gradient(145deg,#171226,#0b0913);border:1px solid #49366e;border-radius:22px;padding:24px;box-shadow:0 24px 90px #000b;color:#f4efff}
+.vi-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.vi-head h2{font-size:25px}.vi-sub{color:#aaa0c6;line-height:1.55;margin:8px 0 18px}.vi-close{border:1px solid #55476e;border-radius:10px;padding:8px 12px}
+.vi-status{display:inline-block;border:1px solid #267b56;color:#7df5b2;background:#103322;padding:5px 9px;border-radius:99px;font-size:11px;font-weight:900;letter-spacing:.7px}
+.vi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.vi-card{border:1px solid #33294a;background:#100d1c;border-radius:15px;padding:15px}.vi-card b{display:block;margin-bottom:7px}.vi-card p{color:#aaa0c6;font-size:12px;line-height:1.5}.vi-card button{margin-top:12px;border:1px solid #4b3c67;border-radius:9px;padding:8px 10px;color:#d8c9ff;font-size:12px;opacity:.6;cursor:not-allowed}.vi-warning{margin-top:16px;border-left:3px solid #e2b34e;background:#30240f;padding:13px;border-radius:8px;color:#f4d99b;font-size:12px;line-height:1.55}.vi-code{white-space:pre-wrap;overflow-wrap:anywhere;background:#080710;border:1px solid #302644;padding:12px;border-radius:10px;color:#c7b7ec;font:11px/1.5 ui-monospace,monospace;margin-top:14px}
+@media(max-width:560px){.vi-grid{grid-template-columns:1fr}.vi-panel{padding:18px}#volta-integration-launch{right:12px;bottom:12px}}
+</style>
+<button id="volta-integration-launch" type="button">⚙ Integrations</button>
+<div id="volta-integration-modal" role="dialog" aria-modal="true" aria-labelledby="vi-title">
+ <section class="vi-panel">
+  <div class="vi-head"><div><span class="vi-status">DEMO MODE ACTIVE</span><h2 id="vi-title" style="margin-top:10px">VOLTA Integration Center</h2></div><button class="vi-close" id="vi-close" type="button">Close ✕</button></div>
+  <p class="vi-sub">The game engine, wallet and ledger remain demo-credit only. This panel reserves a clean adapter layer for future, separately approved services without connecting payment rails or accepting deposits.</p>
+  <div class="vi-grid">
+   <div class="vi-card"><b>Demo wallet & ledger</b><p>Active local demo-credit balance, stakes, returns and transaction history.</p><span class="vi-status">ACTIVE · DEMO</span></div>
+   <div class="vi-card"><b>Payment provider adapter</b><p>Future integration slot. No provider credentials, payment requests or money movement are enabled.</p><button type="button" disabled>Not connected</button></div>
+   <div class="vi-card"><b>Identity / age verification</b><p>Future compliance adapter slot. Must be completed and validated before any regulated real-money service.</p><button type="button" disabled>Not connected</button></div>
+   <div class="vi-card"><b>Geolocation & jurisdiction</b><p>Future location and eligibility checks. No real-money access is available in this demo build.</p><button type="button" disabled>Not connected</button></div>
+  </div>
+  <div class="vi-warning"><b>Important:</b> Real-money gambling requires jurisdiction-specific licensing, approved payment providers, age and identity checks, geofencing, AML controls, responsible-gambling safeguards, security reviews and legal approval. This build does not enable deposits, withdrawals, cash prizes or real-money wagering.</div>
+  <div class="vi-code">// Future adapter contract — intentionally inactive\nconst paymentAdapter = {\n  enabled: false,\n  createDeposit: async () => { throw new Error('Real-money mode is disabled'); },\n  createWithdrawal: async () => { throw new Error('Real-money mode is disabled'); }\n};</div>
+ </section>
+</div>
+<script id="volta-integration-upgrade">
+(()=>{const modal=document.getElementById('volta-integration-modal'),open=document.getElementById('volta-integration-launch'),close=document.getElementById('vi-close');if(!modal||!open||!close)return;const hide=()=>modal.classList.remove('open');open.addEventListener('click',()=>modal.classList.add('open'));close.addEventListener('click',hide);modal.addEventListener('click',e=>{if(e.target===modal)hide()});document.addEventListener('keydown',e=>{if(e.key==='Escape')hide()});})();
+</script>
+
+
+<style id="volta-v10-cinematic-lobby">
+:root{--gold:#e8bd68;--gold2:#fff0bd}
+body{background:#07060b}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,#000,transparent 78%)}
+.app{position:relative;z-index:1}
+.hero{position:relative;overflow:hidden;border:1px solid #604b2a!important;background:radial-gradient(ellipse at 78% 42%,#69471d66,transparent 42%),linear-gradient(115deg,#191324 0%,#100d18 48%,#21170d 100%)!important;box-shadow:0 18px 55px #0008,inset 0 1px #ffffff12!important}
+.hero:after{content:"♛";position:absolute;right:8%;top:2%;font-size:clamp(130px,23vw,270px);line-height:1;color:#f0c86a0c;text-shadow:0 0 55px #e6b95b22;transform:rotate(-12deg);pointer-events:none}
+.hero .pill{border-color:#98743b!important;color:#f3d58e!important;background:#3c2c174d!important}
+.hero h1 em{color:#f0c66e!important;text-shadow:0 0 24px #d9a94c55}
+.hero .btn-primary{background:linear-gradient(135deg,#f4d58b,#b78336)!important;color:#211707!important;box-shadow:0 7px 25px #d8a84b35}
+.hero-stats .stat{border-color:#80623955!important;background:#120e18aa!important;backdrop-filter:blur(8px)}
+.hero-stats .stat b{font-size:17px!important;color:#f0ce83!important}
+.sec-h{margin-top:25px!important}.sec-h h2{letter-spacing:.02em}
+#lobby{position:relative}
+#lobby:before{content:"THE FLOOR";display:block;color:#b79b68;font-size:10px;font-weight:900;letter-spacing:.24em;margin:4px 0 8px}
+#grid{gap:16px!important}
+#grid .card{position:relative;isolation:isolate;overflow:hidden;min-height:180px!important;border:1px solid #4b3b2b!important;border-radius:17px!important;background:linear-gradient(145deg,#1c1722,#0d0b12)!important;box-shadow:0 9px 24px #0005;transition:transform .25s,border-color .25s,box-shadow .25s!important}
+#grid .card:before{content:"";position:absolute;inset:0;z-index:-1;background:var(--art);opacity:.36;filter:saturate(1.15);transition:opacity .25s,transform .45s}
+#grid .card:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(145deg,transparent 25%,#07060bdf 100%)}
+#grid .card:hover{transform:translateY(-6px) scale(1.015)!important;border-color:#d6ad60!important;box-shadow:0 14px 38px #0009,0 0 22px #d9ad5a20!important}
+#grid .card:hover:before{opacity:.62;transform:scale(1.12) rotate(-3deg)}
+#grid .card .glyph{width:76px!important;height:76px!important;display:grid;place-items:center;border-radius:20px!important;background:#08070bc9!important;border:1px solid #e4c27c55!important;box-shadow:0 0 30px color-mix(in srgb,var(--glow) 40%,transparent)!important;font-size:39px!important;animation:voltaFloat 4s ease-in-out infinite}
+#grid .card b{font-size:15px!important;letter-spacing:.015em}
+#grid .card small{color:#b7ac9b!important}
+#grid .card .tag{background:#d4ad65!important;color:#211706!important;border:0!important;font-weight:900}
+@keyframes voltaFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+#lobby .demo-note{border:1px solid #5c482a;background:#17120b;color:#e7cf9d;padding:12px 15px;border-radius:12px;margin-top:18px}
+.search:focus-within{border-color:#d7b46b!important;box-shadow:0 0 18px #d7b46b25!important}
+.wallet{border-color:#67502e!important}.wallet .amt{color:#f4d58c!important}
+.side .brand-mark{background:linear-gradient(135deg,#f4d88f,#a9772c)!important;box-shadow:0 0 24px #d9ae5a55!important}
+.side .nav button.active{color:#f1cf82!important;background:linear-gradient(90deg,#d9ad5a20,transparent)!important}
+.side .nav button.active::before{background:#e8bf6c!important;box-shadow:0 0 14px #e8bf6c88!important}
+.game-modal .gm-v-chip{border-color:#d8b56d!important;color:#f2d68e!important}
+.gm-btn{background:linear-gradient(135deg,#e8c477,#a97932)!important;color:#211707!important}
+@media(max-width:760px){.hero{padding:23px!important}.hero-stats{gap:8px!important}.hero-stats .stat{padding:10px!important}#grid .card{min-height:155px!important}}
+@media(prefers-reduced-motion:reduce){#grid .card .glyph{animation:none!important}#grid .card{transition:none!important}}
+</style>
+<script id="volta-v10-polish">
+(()=>{
+ const lobby=document.getElementById('lobby');
+ if(lobby){const head=lobby.querySelector('.sec-h');if(head){const note=document.createElement('div');note.className='v10-floor-note';note.innerHTML='<span>✦</span> Choose a table. Enter a dedicated game room. Play with demo credits.';head.insertAdjacentElement('afterend',note);}}
+ const style=document.createElement('style');style.textContent='.v10-floor-note{display:flex;align-items:center;gap:9px;color:#b9ad9a;font-size:12px;margin:-5px 0 16px}.v10-floor-note span{color:#e7c16f;font-size:17px}';document.head.appendChild(style);
+})();
+</script>
+
+</body>
+</html>
